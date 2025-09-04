@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoNotify BG — MVP</title>
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root{ --r:16px;}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; padding:24px; background:#0b1020; color:#e8ecf1}
+    .app{max-width:960px; margin:0 auto}
+    h1{margin:0 0 8px; font-size:26px}
+    .card{background:#121a33; border:1px solid #1b274d; border-radius:var(--r); padding:16px; margin-bottom:14px}
+    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:10px}
+    .col-12{grid-column:span 12}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+    label{display:block; font-size:12px; opacity:.9; margin-bottom:6px}
+    input,select{width:100%; padding:10px 12px; border-radius:12px; border:1px solid #243463; background:#0e1530; color:#e8ecf1; font-size:14px}
+    input:focus{outline:none; border-color:#3a57a6; box-shadow:0 0 0 3px rgba(58,87,166,.25)}
+    .btn{padding:10px 14px; border-radius:12px; border:1px solid #2a3f7a; background:#162350; color:#e8ecf1; cursor:pointer; font-weight:600}
+    .btn:hover{background:#1b2b61}
+    .btn.secondary{background:transparent}
+    .list{display:grid; gap:8px}
+    .item{display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid #223566; border-radius:12px; background:#0e1530}
+    .bad{color:#ffb3b3}.warn{color:#ffd280}.ok{color:#b4f0b7}
+    .muted{opacity:.8}
+    .chips{display:flex; gap:6px; flex-wrap:wrap}
+    .chip{padding:2px 8px; border-radius:999px; border:1px solid #2a3f7a; font-size:12px}
+    .k{display:flex; gap:8px; flex-wrap:wrap}
+    .sep{height:1px; background:#243463; margin:8px 0; opacity:.6}
+    .watermark{opacity:.6; font-size:12px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="card watermark" style="margin-top:0">
+    <div><b>AutoNotify BG (MVP)</b> — ГО • Винетка • ГТП</div>
+    <div>Автор: Станислав Кръстев • ✉️ stanislav90030@gmail.com</div>
+  </div>
+
+  <h1>Твоите МПС</h1>
+  <div class="card">
+    <div class="k" style="margin-bottom:10px">
+      <button class="btn" onclick="openEditor()">Добави МПС</button>
+      <button class="btn secondary" onclick="exportAllICS()">Експорт на всички в .ics</button>
+      <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
+    </div>
+    <div id="list" class="list"></div>
+  </div>
+
+  <div class="card" id="editor" style="display:none">
+    <h3 id="editorTitle">Ново МПС</h3>
+    <div class="row">
+      <div class="col-4">
+        <label>Рег. номер (по избор)</label>
+        <input id="e_plate" placeholder="напр. A1234BC" />
+      </div>
+      <div class="col-4">
+        <label>ГО — дата на изтичане</label>
+        <input id="e_go" type="date" />
+      </div>
+      <div class="col-4">
+        <label>Винетка — дата на изтичане</label>
+        <input id="e_vin" type="date" />
+      </div>
+      <div class="col-4">
+        <label>ГТП — дата на изтичане</label>
+        <input id="e_gtp" type="date" />
+      </div>
+      <div class="col-8">
+        <label>Напомни преди</label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="r10" checked /> 10 дни</label>
+          <label class="chip"><input type="checkbox" id="r5" checked /> 5 дни</label>
+          <label class="chip"><input type="checkbox" id="r1" checked /> 1 ден</label>
+        </div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="k">
+      <button class="btn" onclick="save()">Запази</button>
+      <button class="btn secondary" onclick="closeEditor()">Отмени</button>
+      <button class="btn secondary" onclick="del()" id="delBtn" style="display:none">Изтрий</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="col-4">
+        <label>Провери ГО</label>
+        <button class="btn" onclick="window.open('https://www.guaranteefund.org/bg/check-policy/','_blank')">Официална проверка</button>
+      </div>
+      <div class="col-4">
+        <label>Провери винетка</label>
+        <button class="btn" onclick="window.open('https://web.bgtoll.bg/Evignette/Status','_blank')">BG Toll</button>
+      </div>
+      <div class="col-4">
+        <label>Провери ГТП</label>
+        <button class="btn" onclick="window.open('https://rta.government.bg/roese/registers/roadworthiness','_blank')">ИА „Автомобилна администрация“</button>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="muted">Приложението не събира лични данни. Всичко се пази локално на твоето устройство.</div>
+  </div>
+</div>
+
+<script>
+const KEY='autonotify_bg_mvp_v1';
+let items=[]; let editId=null;
+
+function load(){ try{ items=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ items=[]; } render(); }
+function persist(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+
+function render(){
+  const L=document.getElementById('list');
+  if(!items.length){ L.innerHTML='<div class="muted">Все още няма добавени МПС.</div>'; return; }
+  // sort by nearest expiry among the 3
+  const today=new Date().setHours(0,0,0,0);
+  const daysLeft = (d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-today)/86400000): 9e9;
+  const soonest = (it)=> Math.min(daysLeft(it.go), daysLeft(it.vin), daysLeft(it.gtp));
+  const cls = (n)=> n<=0?'bad':(n<=10?'warn':'ok');
+  const label = (n)=> n===9e9?'—':(n<=0?'изтекло':n+' дни');
+  const fmt = (d)=> d? new Date(d).toLocaleDateString('bg-BG'): '—';
+
+  const sorted=[...items].sort((a,b)=>soonest(a)-soonest(b));
+  L.innerHTML = sorted.map(it=>{
+    const n=soonest(it);
+    return `<div class="item">
+      <div>
+        <div><b>${it.plate||'МПС'}</b> <span class="${cls(n)}">(${label(n)})</span></div>
+        <div class="muted">ГО: ${fmt(it.go)} • Винетка: ${fmt(it.vin)} • ГТП: ${fmt(it.gtp)}</div>
+        <div class="chips muted">Напомняния: ${it.r10?'10д ':'- '} ${it.r5?'5д ':'- '} ${it.r1?'1д':'-'}</div>
+      </div>
+      <div class="k">
+        <button class="btn secondary" onclick="edit('${it.id}')">Редактирай</button>
+        <button class="btn secondary" onclick="downloadICS('${it.id}')">.ics</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEditor(){ editId=null; document.getElementById('editorTitle').textContent='Ново МПС';
+  ['e_plate','e_go','e_vin','e_gtp'].forEach(id=>document.getElementById(id).value='');
+  ['r10','r5','r1'].forEach(id=>document.getElementById(id).checked=true);
+  document.getElementById('delBtn').style.display='none';
+  document.getElementById('editor').style.display='block';
+}
+function closeEditor(){ document.getElementById('editor').style.display='none'; }
+
+function edit(id){
+  const it=items.find(x=>x.id===id); if(!it) return;
+  editId=id; document.getElementById('editorTitle').textContent='Редакция';
+  document.getElementById('e_plate').value=it.plate||'';
+  document.getElementById('e_go').value=it.go||'';
+  document.getElementById('e_vin').value=it.vin||'';
+  document.getElementById('e_gtp').value=it.gtp||'';
+  document.getElementById('r10').checked=!!it.r10; document.getElementById('r5').checked=!!it.r5; document.getElementById('r1').checked=!!it.r1;
+  document.getElementById('delBtn').style.display='inline-flex';
+  document.getElementById('editor').style.display='block';
+}
+
+function save(){
+  const it = {
+    id: editId || Math.random().toString(36).slice(2),
+    plate: document.getElementById('e_plate').value.trim(),
+    go: document.getElementById('e_go').value||null,
+    vin: document.getElementById('e_vin').value||null,
+    gtp: document.getElementById('e_gtp').value||null,
+    r10: document.getElementById('r10').checked,
+    r5: document.getElementById('r5').checked,
+    r1: document.getElementById('r1').checked,
+  };
+  if(editId){ items = items.map(x=> x.id===editId? it : x); } else { items.push(it); }
+  persist(); closeEditor(); render();
+}
+
+function del(){
+  if(!editId) return;
+  items = items.filter(x=>x.id!==editId);
+  persist(); closeEditor(); render();
+}
+
+// --- ICS generation (per item or all) ---
+function pad(n){ return (n<10?'0':'')+n; }
+function dateToICS(d){ const dt=new Date(d); return dt.getUTCFullYear()+pad(dt.getUTCMonth()+1)+pad(dt.getUTCDate())+'T090000Z'; }
+
+function makeIcsForItem(it){
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//AutoNotifyBG//MVP//BG'];
+  const add = (title, dueDate)=>{
+    if(!dueDate) return;
+    const uid = Math.random().toString(36).slice(2)+'@autonotify.bg';
+    const dt = new Date(dueDate); dt.setHours(9,0,0,0);
+    const base = dt.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+    lines.push('BEGIN:VEVENT');
+    lines.push('UID:'+uid);
+    lines.push('DTSTAMP:'+base);
+    lines.push('DTSTART:'+base);
+    lines.push('SUMMARY:'+title+(it.plate?(' • '+it.plate):''));
+    // alarms 10/5/1 days before at 09:00 (relative)
+    if(it.r10) lines.push('BEGIN:VALARM','TRIGGER:-P10D','ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM');
+    if(it.r5) lines.push('BEGIN:VALARM','TRIGGER:-P5D','ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM');
+    if(it.r1) lines.push('BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM');
+    lines.push('END:VEVENT');
+  };
+  add('ГО изтича', it.go);
+  add('Винетка изтича', it.vin);
+  add('ГТП изтича', it.gtp);
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function download(filename, content){
+  const a=document.createElement('a');
+  a.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename;
+  a.click();
+}
+
+function downloadICS(id){
+  const it=items.find(x=>x.id===id); if(!it) return;
+  const ics = makeIcsForItem(it);
+  download((it.plate||'mps')+'.ics', ics);
+}
+
+function exportAllICS(){
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//AutoNotifyBG//MVP//BG'];
+  items.forEach(it=>{
+    const partial = makeIcsForItem(it).split('\r\n').filter(x=>!/^BEGIN:VCALENDAR|END:VCALENDAR$/.test(x));
+    lines.push(...partial);
+  });
+  lines.push('END:VCALENDAR');
+  download('autonotify_all.ics', lines.join('\r\n'));
+}
+
+// --- PWA install hook ---
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error) );
+}
+let deferredPrompt=null;
+const installBtn=document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-flex'; });
+if(installBtn){
+  installBtn.addEventListener('click', async ()=>{
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none';
+  });
+}
+
+load();
+</script>
+</body>
+</html>
