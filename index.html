@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoNotify BG — с персонален фон</title>
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root{ --r:16px;}
+    *{box-sizing:border-box}
+    /* --- Strong legible background --- */
+    body{
+      margin:0; min-height:100vh; color:#e8ecf1;
+      background: #0b1020;
+    }
+    /* real image layer */
+    body::before{
+      content:""; position:fixed; inset:0; z-index:-2;
+      background: url('./bg-portrait-1080x1920.webp') center/cover no-repeat;
+    }
+    @media (min-aspect-ratio: 16/10){
+      body::before{ background-image:url('./bg-landscape-1920x1080.webp'); }
+    }
+    /* dark veil to make text pop */
+    body::after{
+      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background: radial-gradient(1200px 700px at 15% -10%, rgba(0,0,0,.45), transparent 60%),
+                  radial-gradient(1000px 600px at 90% 110%, rgba(0,0,0,.45), transparent 55%),
+                  linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.55));
+      mix-blend-mode: normal;
+    }
+    .app{max-width:980px; margin:0 auto; padding:24px}
+    h1{margin:6px 0 10px; font-size:26px; text-shadow:0 2px 6px rgba(0,0,0,.6)}
+    .card{background:rgba(18,26,51,.9); backdrop-filter: blur(2px);
+          border:1px solid #1b274d; border-radius:var(--r); padding:16px; margin-bottom:14px;
+          box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:10px}
+    .col-12{grid-column:span 12}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+    label{display:block; font-size:12px; opacity:.92; margin-bottom:6px; text-shadow:0 1px 3px rgba(0,0,0,.5)}
+    input{width:100%; padding:10px 12px; border-radius:12px; border:1px solid #243463; background:#0e1530; color:#e8ecf1; font-size:14px}
+    input:focus{outline:none; border-color:#3a57a6; box-shadow:0 0 0 3px rgba(58,87,166,.25)}
+    .btn{padding:10px 14px; border-radius:12px; border:1px solid #2a3f7a; background:#162350; color:#e8ecf1; cursor:pointer; font-weight:600; text-shadow:0 1px 2px rgba(0,0,0,.4)}
+    .btn:hover{background:#1b2b61}
+    .btn.secondary{background:transparent}
+    .list{display:grid; gap:8px}
+    .item{display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid #223566; border-radius:12px; background:#0e1530}
+    .bad{color:#ffb3b3}.warn{color:#ffd280}.ok{color:#b4f0b7}
+    .muted{opacity:.85}
+    .chips{display:flex; gap:6px; flex-wrap:wrap}
+    .chip{padding:2px 8px; border-radius:999px; border:1px solid #2a3f7a; font-size:12px}
+    .k{display:flex; gap:8px; flex-wrap:wrap}
+    .sep{height:1px; background:#243463; margin:8px 0; opacity:.6}
+    .watermark{opacity:.8; font-size:12px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="card watermark" style="margin-top:0">
+    <div><b>AutoNotify BG — фон активен</b></div>
+    <div>Текстът е подсилен с воал, за по-добра четимост.</div>
+  </div>
+
+  <h1>Демо екран</h1>
+  <div class="card"><div class="row">
+    <div class="col-4"><label>Поле</label><input placeholder="пример" /></div>
+    <div class="col-4"><label>Поле</label><input placeholder="пример" /></div>
+    <div class="col-4"><label>Поле</label><input placeholder="пример" /></div>
+  </div></div>
+</div>
+
+<script>
+// Минимум, за да не пречим на твоето приложение. Премахни целия body вътре и постави своя.
+</script>
+</body>
+</html>
