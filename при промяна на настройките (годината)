@@ -297,6 +297,88 @@ const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 const kmClass=(n)=> n<=0?'bad':(n<=1000?'warn':'ok');
 const dayOfYear=(date,year)=>{ const d=new Date(date); const y=year||d.getFullYear(); const start=new Date(y,0,1); const t=new Date(d); t.setFullYear(y); return Math.floor((t-start)/86400000)+1; };
 const isLeap=(y)=> (new Date(y,1,29).getMonth()===1);
+  // === SPARKLINE (месечно натоварване) ===
+function sparkYearValue(){
+  const sel = db.cfg.timelineYear;
+  return (sel==='current') ? new Date().getFullYear() : Number(sel)||new Date().getFullYear();
+}
+function datedTasks(){ return allTasks().filter(t => !!t.date); }
+function monthlyBuckets(year){
+  const buckets = Array(12).fill(0);
+  datedTasks().forEach(t=>{
+    const d = new Date(t.date); d.setFullYear(year);
+    buckets[d.getMonth()]++;
+  });
+  return buckets;
+}
+function buildSmoothPath(points){
+  if(points.length<2) return '';
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for(let i=0;i<points.length-1;i++){
+    const p0=points[i], p1=points[i+1];
+    const mx=(p0.x+p1.x)/2, my=(p0.y+p1.y)/2;
+    d += ` Q ${p0.x} ${p0.y} ${mx} ${my}`;
+    if(i<points.length-2){
+      const p2=points[i+2], mx2=(p1.x+p2.x)/2, my2=(p1.y+p2.y)/2;
+      d += ` T ${mx2} ${my2}`;
+    }else{
+      d += ` T ${p1.x} ${p1.y}`;
+    }
+  }
+  return d;
+}
+function renderSpark(){
+  const year = sparkYearValue();
+  const svg  = document.getElementById('spark');
+  if(!svg) return;
+  const w    = svg.clientWidth || svg.parentElement.clientWidth;
+  const h    = svg.clientHeight || 180;
+  const padL = 28, padR = 16, padT = 16, padB = 26;
+  document.getElementById('spYear').textContent = year;
+
+  const values = monthlyBuckets(year);
+  const maxVal = Math.max(1, ...values);
+  const stepX  = (w - padL - padR) / 11;
+  const pts = values.map((v,i)=>{
+    const x = padL + i*stepX;
+    const y = padT + (h - padT - padB) * (1 - v/maxVal);
+    return {x,y};
+  });
+
+  const ns='http://www.w3.org/2000/svg';
+  svg.innerHTML='';
+
+  // ос X
+  const axis=document.createElementNS(ns,'line');
+  axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR);
+  axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB);
+  axis.setAttribute('class','sp-axis'); svg.appendChild(axis);
+
+  // деления по месеци
+  for(let m=0;m<12;m++){
+    const x=padL+m*stepX;
+    const tick=document.createElementNS(ns,'line');
+    tick.setAttribute('x1',x); tick.setAttribute('x2',x);
+    tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6);
+    tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
+    const lbl=document.createElementNS(ns,'text');
+    lbl.setAttribute('x',x+2); lbl.setAttribute('y',h-8);
+    lbl.setAttribute('class','tl-label');
+    lbl.textContent = new Date(2000,m,1).toLocaleString('bg-BG',{month:'short'});
+    svg.appendChild(lbl);
+  }
+
+  // крива + запълване
+  const d = buildSmoothPath(pts);
+  if(d){
+    const area=document.createElementNS(ns,'path');
+    const areaD = d + ` L ${padL + 11*stepX} ${h-padB} L ${padL} ${h-padB} Z`;
+    area.setAttribute('d',areaD); area.setAttribute('class','sp-path'); svg.appendChild(area);
+    const line=document.createElementNS(ns,'path');
+    line.setAttribute('d',d); line.setAttribute('class','sp-line'); svg.appendChild(line);
+  }
+}
+
 
 /* business */
 function tasksForVehicle(v){
