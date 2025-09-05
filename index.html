@@ -3,19 +3,48 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AutoNotify BG — Сервизна книжка (MVP)</title>
-  <meta name="theme-color" content="#0b1020" />
+  <title>AutoNotify BG — Сервизна книжка (Calm Pastel)</title>
+  <meta name="theme-color" content="#f3f6ff" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <!-- приятелски, четим шрифт -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --r:16px;}
-    *{box-sizing:border-box}
+    :root{
+      /* Палитра — спокойни пастели */
+      --bg:#f3f6ff;
+      --text:#1b2a38;
+      --muted:#5d6b7a;
 
-    /* === ФОН: малко по-светъл воал за по-жив фон, но четим текст === */
-    body{ margin:0; min-height:100vh; color:#e8ecf1; background:#0b1020; }
+      --card: rgba(255,255,255,.85);
+      --border:#e3e9fb;
+      --shadow: 0 10px 30px rgba(32,58,92,.10);
+
+      --accent:#5ba7ff;     /* бутони/акценти */
+      --accent-hover:#3f90f3;
+
+      --ok:#28c76f;         /* статуси */
+      --warn:#f9a826;
+      --bad:#ff6b6b;
+
+      --r:14px; --pad:12px; --gap:10px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family:"Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #edf3ff 0%, transparent 60%),
+        radial-gradient(1000px 600px at 90% 110%, #f7f0ff 0%, transparent 55%),
+        linear-gradient(180deg, #f7fbff 0%, #f3f6ff 100%);
+    }
+    /* снимка + БЕЛ воал (изсветляване) */
     body::before{
       content:""; position:fixed; inset:0; z-index:-2;
       background:url('./bg-portrait-1080x1920.webp') center/cover no-repeat;
+      filter: saturate(.7) contrast(.9);
     }
     @media (min-aspect-ratio:16/10){
       body::before{ background-image:url('./bg-landscape-1920x1080.webp'); }
@@ -23,54 +52,77 @@
     body::after{
       content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
       background:
-        radial-gradient(1200px 700px at 15% -10%, rgba(0,0,0,.32), transparent 60%),
-        radial-gradient(1000px 600px at 90% 110%, rgba(0,0,0,.32), transparent 55%),
-        linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.38));
+        radial-gradient(1200px 700px at 15% -10%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(1000px 600px at 90% 110%, rgba(255,255,255,.55), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.55));
+      mix-blend-mode: lighten;
     }
 
-    /* === ЛЕЙАУТ/КОМПОНЕНТИ === */
+    /* Лейаут */
     .app{max-width:1180px; margin:0 auto; padding:18px}
     .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px}
     .brand{font-weight:700}
     .nav{display:flex; gap:8px; flex-wrap:wrap}
-    .btn{padding:8px 12px; border-radius:12px; border:1px solid #2a3f7a; background:#162350; color:#e8ecf1; cursor:pointer; font-weight:600}
-    .btn:hover{background:#1b2b61}
-    .btn.secondary{background:transparent}
-    .card{background:rgba(18,26,51,.85); backdrop-filter: blur(2px);
-          border:1px solid #1b274d; border-radius:16px; padding:12px; margin-bottom:12px;
-          box-shadow:0 10px 30px rgba(0,0,0,.28)}
-    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:10px}
-    .col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
-    label{display:block; font-size:12px; opacity:.92; margin-bottom:6px}
-    input,select,textarea{width:100%; padding:10px 12px; border-radius:12px; border:1px solid #243463; background:#0e1530; color:#e8ecf1; font-size:14px}
-    input:focus,select:focus,textarea:focus{outline:none; border-color:#3a57a6; box-shadow:0 0 0 3px rgba(58,87,166,.25)}
-    .muted{opacity:.85}.small{font-size:12px}
 
-    /* === ТАБЛО: адаптивна решетка + модерни редове === */
-    #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px; }
+    .btn{
+      padding:10px 14px; border-radius:999px;
+      background: var(--accent); border:1px solid #cfe0ff; color:white; font-weight:700;
+      box-shadow: 0 6px 18px rgba(91,167,255,.25); cursor:pointer
+    }
+    .btn:hover{ background:var(--accent-hover) }
+    .btn.secondary{
+      background: white; color:var(--text); border:1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(20,40,80,.06);
+    }
+
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--r);
+      padding:var(--pad); margin-bottom:12px; box-shadow:var(--shadow); backdrop-filter: blur(4px);
+    }
+
+    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:var(--gap)}
+    .col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input,select,textarea{
+      width:100%; padding:10px 12px; border-radius:12px;
+      border:1px solid var(--border); background:#ffffff; color:var(--text); font-size:14px;
+      box-shadow:0 1px 0 rgba(10,20,40,.02) inset;
+    }
+    input:focus,select:focus,textarea:focus{outline:none; border-color:#b9ccff; box-shadow:0 0 0 3px rgba(185,204,255,.35)}
+
+    /* Табло – решетка + карти */
+    #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
     .item{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 12px; border:1px solid #223566; border-radius:14px; background:#0e1530;
+      padding:12px 14px; border:1px solid var(--border); border-radius:16px; background:#ffffffc4;
+      box-shadow: var(--shadow);
     }
-    .item-title{font-weight:700; line-height:1.15}
-    .item-sub{font-size:12px; opacity:.85}
+    .item-title{font-weight:700}
+    .item-sub{font-size:12px; color:var(--muted)}
     .badge{
-      min-width:88px; text-align:center; padding:8px 10px; border-radius:12px;
-      font-weight:700; border:1px solid #2a3f7a; background:#162350; box-shadow:0 2px 8px rgba(0,0,0,.25);
+      min-width:98px; text-align:center; padding:8px 10px; border-radius:10px; font-weight:700;
+      background:#eef5ff; border:1px solid #d7e6ff; color:#2d4c7a;
     }
+    .ok   { color:var(--ok) }
+    .warn { color:var(--warn) }
+    .bad  { color:var(--bad) }
 
-    /* цветове/икони */
-    .ok{color:#b4f0b7} .warn{color:#ffd280} .bad{color:#ffb3b3}
     .chips{display:flex; gap:6px; flex-wrap:wrap}
-    .chip{padding:2px 8px; border-radius:999px; border:1px solid #2a3f7a; font-size:12px}
-    .sep{height:1px; background:#243463; opacity:.6; margin:8px 0}
+    .chip{padding:3px 10px; border-radius:999px; border:1px solid var(--border); font-size:12px; background:#fff}
+    .sep{height:1px; background:var(--border); opacity:.8; margin:8px 0}
     .right{display:flex; gap:8px; flex-wrap:wrap}
-    .watermark{opacity:.8; font-size:12px}
-    a.link{color:#a7c2ff; text-decoration:none} a.link:hover{text-decoration:underline}
+    .watermark{opacity:.75; font-size:12px; color:var(--muted)}
+    a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
+    /* цветни „точки“ по тип */
     .dot{display:inline-block; width:10px; height:10px; border-radius:999px; margin-right:8px}
-    .dot-go{background:#5ac8fa} .dot-gtp{background:#64d2ff} .dot-vin{background:#ffd166}
-    .dot-oil{background:#ff9f1a} .dot-filter{background:#a1e3a1} .dot-brake{background:#ff6b6b} .dot-belt{background:#c0a6ff}
+    .dot-go{background:#5ba7ff}     /* ГО */
+    .dot-gtp{background:#7dd3fc}    /* ГТП */
+    .dot-vin{background:#ffd166}    /* винетка */
+    .dot-oil{background:#ffb86b}    /* масло */
+    .dot-filter{background:#a7f3d0} /* филтри */
+    .dot-brake{background:#ff8b8b}  /* накладки */
+    .dot-belt{background:#c7b7ff}   /* ремък */
   </style>
 </head>
 <body>
@@ -86,19 +138,19 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- TABLO -->
   <section id="tab-dashboard" class="card">
     <h3>Следващи задачи</h3>
     <div id="todoList"></div>
     <div class="sep"></div>
-    <div class="chips small muted">
-      <div class="chip"><span class="ok">зелено</span> – всичко е наред</div>
-      <div class="chip"><span class="warn">жълто</span> – &lt; 30 дни или &lt; 1000 км</div>
-      <div class="chip"><span class="bad">червено</span> – просрочено</div>
+    <div class="chips small">
+      <div class="chip"><span class="ok">зелено</span> — всичко е наред</div>
+      <div class="chip"><span class="warn">жълто</span> — &lt; 30 дни или &lt; 1000 км</div>
+      <div class="chip"><span class="bad">червено</span> — просрочено</div>
     </div>
   </section>
 
-  <!-- VEHICLES -->
+  <!-- MPS -->
   <section id="tab-vehicles" class="card" style="display:none">
     <div class="right" style="justify-content:space-between; margin-bottom:8px">
       <h3>Моите МПС</h3>
@@ -110,7 +162,7 @@
     <div id="vehicleList"></div>
   </section>
 
-  <!-- HISTORY -->
+  <!-- ISTORIA -->
   <section id="tab-history" class="card" style="display:none">
     <div class="right" style="justify-content:space-between; margin-bottom:8px">
       <h3>История</h3>
@@ -119,7 +171,7 @@
     <div id="historyList"></div>
   </section>
 
-  <!-- SETTINGS -->
+  <!-- NASTROYKI -->
   <section id="tab-settings" class="card" style="display:none">
     <h3>Настройки</h3>
     <div class="row">
@@ -132,8 +184,8 @@
         <div class="chips">
           <label class="chip"><input id="cfg_d30" type="checkbox" checked/> 30</label>
           <label class="chip"><input id="cfg_d10" type="checkbox" checked/> 10</label>
-          <label class="chip"><input id="cfg_d5" type="checkbox" checked/> 5</label>
-          <label class="chip"><input id="cfg_d1" type="checkbox" checked/> 1</label>
+          <label class="chip"><input id="cfg_d5"  type="checkbox" checked/> 5</label>
+          <label class="chip"><input id="cfg_d1"  type="checkbox" checked/> 1</label>
         </div>
       </div>
     </div>
@@ -143,7 +195,7 @@
     </div>
   </section>
 
-  <!-- VEHICLE EDITOR -->
+  <!-- EDITOR -->
   <section id="editor" class="card" style="display:none">
     <h3 id="editorTitle">МПС</h3>
     <div class="row">
@@ -151,7 +203,6 @@
       <div class="col-4"><label>Собственик (по избор)</label><input id="e_owner" placeholder="напр. Иван Петров"/></div>
       <div class="col-4"><label>Текущ километраж</label><input id="e_odometer" type="number" min="0" step="1" placeholder="км"/></div>
 
-      <!-- ГО -->
       <div class="col-3"><label>ГО – начало</label><input id="e_go_start" type="date"/></div>
       <div class="col-3">
         <label>ГО – вноски</label>
@@ -161,9 +212,8 @@
           <option value="4">4 вноски (на 3 м.)</option>
         </select>
       </div>
-      <!-- ГТП -->
       <div class="col-3"><label>ГТП – дата на прегледа</label><input id="e_gtp" type="date"/></div>
-      <!-- Винетка -->
+
       <div class="col-3">
         <label>Винетка – тип</label>
         <select id="e_vignette_type">
@@ -174,7 +224,6 @@
       </div>
       <div class="col-3"><label>Винетка – начало</label><input id="e_vignette_start" type="date"/></div>
 
-      <!-- Сервизни елементи -->
       <div class="col-3"><label>Масло – интервал (км)</label><input id="e_oil_km" type="number" min="0" step="500" placeholder="напр. 10000"/></div>
       <div class="col-3"><label>Масло – интервал (мес.)</label><input id="e_oil_mo" type="number" min="0" step="1" placeholder="напр. 12"/></div>
       <div class="col-3"><label>Филтър маслен – интервал (км)</label><input id="e_of_km" type="number" min="0" step="500"/></div>
@@ -195,15 +244,14 @@
 </div>
 
 <script>
-/* ======== MODEL & STORAGE ======== */
+/* ===== model & storage ===== */
 const KEY='autonotify_servicebook_v1';
 let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true}, vehicles:[], history:[] };
 let editId=null;
-
 function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); renderAll(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
-/* ======== HELPERS ======== */
+/* helpers */
 const addDays=(d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
 const addMonths=(d,m)=>{ const x=new Date(d); x.setMonth(x.getMonth()+m); return x; };
 const addYears=(d,y)=>{ const x=new Date(d); x.setFullYear(x.getFullYear()+y); return x; };
@@ -212,47 +260,36 @@ const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/864
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 const kmClass=(n)=> n<=0?'bad':(n<=1000?'warn':'ok');
 
-/* ======== BUSINESS LOGIC ======== */
+/* business */
 function tasksForVehicle(v){
   const out=[]; const today=new Date();
   if(v.goStart){
-    const goEnd = addYears(v.goStart,1);
-    out.push({veh:v.name, type:'ГО изтича', date:goEnd});
-    const plan = Number(v.goPlan||1);
-    const instMonths = plan===1? [0] : (plan===2? [0,6] : [0,3,6,9]);
-    instMonths.forEach(m=> out.push({veh:v.name, type:`ГО – вноска ${m===0?1:(m/3+1)}`, date:addMonths(v.goStart,m)}) );
+    out.push({veh:v.name, type:'ГО изтича', date:addYears(v.goStart,1)});
+    const plan=Number(v.goPlan||1), inst=plan===1?[0]:(plan===2?[0,6]:[0,3,6,9]);
+    inst.forEach(m=> out.push({veh:v.name, type:`ГО – вноска ${m===0?1:(m/3+1)}`, date:addMonths(v.goStart,m)}));
   }
   if(v.gtp){ out.push({veh:v.name, type:'ГТП изтича', date:addYears(v.gtp,1)}); }
   if(v.vigStart && v.vigType){ out.push({veh:v.name, type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
 
-  const o = Number(v.odometer||0);
-  const kmTask=(label,lastKm,intervalKm)=>{
-    if(!intervalKm) return;
-    const nextKm = (Number(lastKm||o)+Number(intervalKm));
-    out.push({veh:v.name, type:label, kmDue:nextKm, kmLeft:nextKm-o});
-  };
-  kmTask('Смяна масло', v.oilLastKm??o, v.oilKm);
-  kmTask('Маслен филтър', v.ofLastKm??o, v.ofKm);
-  kmTask('Горивен филтър', v.ffLastKm??o, v.ffKm);
-  kmTask('Въздушен филтър', v.airLastKm??o, v.airKm);
-  kmTask('Накладки', v.padsLastKm??o, v.padsKm);
-  kmTask('Ангренажен ремък (км)', v.beltLastKm??o, v.beltKm);
+  const o=Number(v.odometer||0);
+  const kmTask=(label,lastKm,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
+  kmTask('Смяна масло',  o, v.oilKm);
+  kmTask('Маслен филтър',o, v.ofKm);
+  kmTask('Горивен филтър',o, v.ffKm);
+  kmTask('Въздушен филтър',o, v.airKm);
+  kmTask('Накладки',o, v.padsKm);
+  kmTask('Ангренажен ремък (км)',o, v.beltKm);
   if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
   return out;
 }
 function allTasks(){
   let arr=[]; db.vehicles.forEach(v=> arr=arr.concat(tasksForVehicle(v)));
-  arr.forEach(t=>{ if(t.date){ t.days=daysLeft(t.date);} });
-  arr.sort((a,b)=>{
-    const ad=(a.date? a.days:9e9), bd=(b.date? b.days:9e9);
-    if(ad!==bd) return ad-bd;
-    const ak=(a.kmLeft??9e9), bk=(b.kmLeft??9e9);
-    return ak-bk;
-  });
+  arr.forEach(t=>{ if(t.date){ t.days=daysLeft(t.date); }});
+  arr.sort((a,b)=>{ const ad=(a.date?a.days:9e9), bd=(b.date?b.days:9e9); if(ad!==bd) return ad-bd; return (a.kmLeft??9e9)-(b.kmLeft??9e9); });
   return arr;
 }
 
-/* ======== RENDER ======== */
+/* render */
 function iconDot(type){
   if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'dot-go';
   if(type.startsWith('ГТП')) return 'dot-gtp';
@@ -265,12 +302,11 @@ function iconDot(type){
 }
 function renderDashboard(){
   const L=document.getElementById('todoList');
-  const tasks = allTasks().slice(0,24);
-  if(!tasks.length){ L.innerHTML='<div class="muted">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
+  const tasks=allTasks().slice(0,24);
+  if(!tasks.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
   L.innerHTML = tasks.map(t=>{
     if(t.date){
-      const cls=statusClass(t.days);
-      const value=(t.days<=0?'изтекло':t.days+' дни');
+      const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
       return `<div class="item">
         <div>
           <div class="item-title"><span class="dot ${iconDot(t.type)}"></span>${t.type}</div>
@@ -278,9 +314,8 @@ function renderDashboard(){
         </div>
         <div class="badge ${cls}">${value}</div>
       </div>`;
-    } else {
-      const left=t.kmLeft, cls=kmClass(left);
-      const value=(left<=0?'проср.':left+' км');
+    }else{
+      const left=t.kmLeft, cls=kmClass(left), value=(left<=0?'проср.':left+' км');
       return `<div class="item">
         <div>
           <div class="item-title"><span class="dot ${iconDot(t.type)}"></span>${t.type}</div>
@@ -293,11 +328,11 @@ function renderDashboard(){
 }
 function renderVehicles(){
   const L=document.getElementById('vehicleList');
-  if(!db.vehicles.length){ L.innerHTML='<div class="muted">Няма добавени МПС.</div>'; return; }
+  if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
   L.innerHTML = db.vehicles.map(v=>`
     <div class="item">
       <div>
-        <div class="item-title">${v.name||'МПС'} ${v.owner?('<span class="small muted">• '+v.owner+'</span>'):''}</div>
+        <div class="item-title">${v.name||'МПС'} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
         <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
       </div>
       <div class="right">
@@ -308,23 +343,22 @@ function renderVehicles(){
 }
 function renderHistory(){
   const L=document.getElementById('historyList');
-  if(!db.history.length){ L.innerHTML='<div class="muted">Все още няма записи.</div>'; return; }
+  if(!db.history.length){ L.innerHTML='<div class="item" style="justify-content:center">Все още няма записи.</div>'; return; }
   L.innerHTML = db.history.map(h=>`<div class="item">
     <div><b>${h.type}</b> • ${h.vehicle} — ${fmt(h.date)} • ${h.odometer||0} км</div>
-    <div class="small muted">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
+    <div class="item-sub">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
   </div>`).join('');
 }
 function renderAll(){ renderDashboard(); renderVehicles(); renderHistory(); }
 
-/* ======== VEHICLE CRUD ======== */
-function openVehicleEditor(){ editId=null; document.getElementById('editorTitle').textContent='Ново МПС';
+/* crud */
+function openVehicleEditor(){ editId=null; editorTitle.textContent='Ново МПС';
   ['e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_oil_km','e_oil_mo','e_of_km','e_ff_km','e_cabin_mo','e_air_km','e_pads_km','e_belt_km','e_belt_yr'].forEach(id=>{
     const el=document.getElementById(id); if(el.tagName==='SELECT') el.selectedIndex=0; else el.value='';
   });
-  document.getElementById('delBtn').style.display='none';
-  document.getElementById('editor').style.display='block';
+  delBtn.style.display='none'; editor.style.display='block';
 }
-function closeVehicleEditor(){ document.getElementById('editor').style.display='none'; }
+function closeVehicleEditor(){ editor.style.display='none'; }
 function editVehicle(id){
   const v=db.vehicles.find(x=>x.id===id); if(!v) return;
   editId=id; editorTitle.textContent='Редакция';
@@ -339,21 +373,20 @@ function editVehicle(id){
 function saveVehicle(){
   const v={
     id: editId || Math.random().toString(36).slice(2),
-    name: e_name.value.trim(), owner: e_owner.value.trim(),
-    odometer: Number(e_odometer.value||0),
-    goStart: e_go_start.value||null, goPlan: Number(e_go_plan.value||1),
-    gtp: e_gtp.value||null, vigType: Number(e_vignette_type.value||12), vigStart: e_vignette_start.value||null,
-    oilKm: Number(e_oil_km.value||0), oilMo: Number(e_oil_mo.value||0),
-    ofKm: Number(e_of_km.value||0), ffKm: Number(e_ff_km.value||0),
-    cabinMo: Number(e_cabin_mo.value||0), airKm: Number(e_air_km.value||0),
-    padsKm: Number(e_pads_km.value||0), beltKm: Number(e_belt_km.value||0), beltYr: Number(e_belt_yr.value||0)
+    name:e_name.value.trim(), owner:e_owner.value.trim(), odometer:Number(e_odometer.value||0),
+    goStart:e_go_start.value||null, goPlan:Number(e_go_plan.value||1),
+    gtp:e_gtp.value||null, vigType:Number(e_vignette_type.value||12), vigStart:e_vignette_start.value||null,
+    oilKm:Number(e_oil_km.value||0), oilMo:Number(e_oil_mo.value||0),
+    ofKm:Number(e_of_km.value||0), ffKm:Number(e_ff_km.value||0),
+    cabinMo:Number(e_cabin_mo.value||0), airKm:Number(e_air_km.value||0),
+    padsKm:Number(e_pads_km.value||0), beltKm:Number(e_belt_km.value||0), beltYr:Number(e_belt_yr.value||0)
   };
   if(editId){ db.vehicles=db.vehicles.map(x=>x.id===editId?v:x);} else { db.vehicles.push(v); }
   save(); closeVehicleEditor(); renderAll();
 }
 function deleteVehicle(){ if(!editId) return; db.vehicles=db.vehicles.filter(x=>x.id!==editId); save(); closeVehicleEditor(); renderAll(); }
 
-/* ======== ICS EXPORT ======== */
+/* ics */
 function makeIcsForVehicle(v){
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//AutoNotifyBG//ServiceBook//BG'];
   const addEvent=(title,date)=>{
@@ -361,16 +394,16 @@ function makeIcsForVehicle(v){
     const stamp=dt.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
     const uid=Math.random().toString(36).slice(2)+'@autonotify.bg';
     lines.push('BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+stamp,'DTSTART:'+stamp,'SUMMARY:'+title+' • '+(v.name||'МПС'));
-    const cfg=db.cfg, alarms=[]; if(cfg.d30) alarms.push('-P30D'); if(cfg.d10) alarms.push('-P10D'); if(cfg.d5) alarms.push('-P5D'); if(cfg.d1) alarms.push('-P1D');
-    alarms.forEach(a=>lines.push('BEGIN:VALARM','TRIGGER:'+a,'ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM'));
+    const c=db.cfg, a=[]; if(c.d30)a.push('-P30D'); if(c.d10)a.push('-P10D'); if(c.d5)a.push('-P5D'); if(c.d1)a.push('-P1D');
+    a.forEach(x=>lines.push('BEGIN:VALARM','TRIGGER:'+x,'ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM'));
     lines.push('END:VEVENT');
   };
   if(v.goStart){ addEvent('ГО изтича', addYears(v.goStart,1));
-    const plan=Number(v.goPlan||1), inst=plan===1?[0]:(plan===2?[0,6]:[0,3,6,9]);
-    inst.forEach((m,i)=> addEvent('ГО – вноска '+(i+1), addMonths(v.goStart,m)) );
+    (Number(v.goPlan||1)===1?[0]:(Number(v.goPlan||1)===2?[0,6]:[0,3,6,9]))
+      .forEach((m,i)=> addEvent('ГО – вноска '+(i+1), addMonths(v.goStart,m)));
   }
   if(v.gtp) addEvent('ГТП изтича', addYears(v.gtp,1));
-  if(v.vigStart && v.vigType) addEvent('Винетка изтича', addMonths(v.vigStart, Number(v.vigType)));
+  if(v.vigStart&&v.vigType) addEvent('Винетка изтича', addMonths(v.vigStart, Number(v.vigType)));
   lines.push('END:VCALENDAR'); return lines.join('\r\n');
 }
 function download(name,content){ const a=document.createElement('a'); a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(content); a.download=name; a.click(); }
@@ -381,13 +414,13 @@ function exportAllICS(){
   lines.push('END:VCALENDAR'); download('servicebook_all.ics', lines.join('\r\n'));
 }
 
-/* ======== SETTINGS ======== */
+/* settings */
 function applyCfgUI(){ cfg_hour.value=db.cfg.hour||'09:00'; cfg_d30.checked=!!db.cfg.d30; cfg_d10.checked=!!db.cfg.d10; cfg_d5.checked=!!db.cfg.d5; cfg_d1.checked=!!db.cfg.d1; }
-['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1'].forEach(id=>{
+;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1'].forEach(id=>{
   document.getElementById(id).addEventListener('change',()=>{ db.cfg.hour=cfg_hour.value; db.cfg.d30=cfg_d30.checked; db.cfg.d10=cfg_d10.checked; db.cfg.d5=cfg_d5.checked; db.cfg.d1=cfg_d1.checked; save(); });
 });
 
-/* ======== NAV ======== */
+/* nav */
 document.querySelectorAll('.nav .btn').forEach(b=>{
   b.addEventListener('click', ()=>{
     const tab=b.dataset.tab;
@@ -395,12 +428,12 @@ document.querySelectorAll('.nav .btn').forEach(b=>{
   });
 });
 
-/* ======== PWA INSTALL ======== */
+/* pwa install */
 let deferredPrompt=null; const installBtn=document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-flex'; });
 if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; }); }
 
-/* BOOT */
+/* boot */
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error)); }
 load();
 </script>
