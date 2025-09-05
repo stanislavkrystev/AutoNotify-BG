@@ -579,35 +579,70 @@ function renderTimeline(){
 }
 
 /* ===== CRUD / ICS (същото като преди) ===== */
-function openVehicleEditor(){ editId=null; editorTitle.textContent='Ново МПС';
-  ['e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_oil_km','e_oil_mo','e_of_km','e_ff_km','e_cabin_mo','e_air_km','e_pads_km','e_belt_km','e_belt_yr'].forEach(id=>{
-    const el=document.getElementById(id); if(el.tagName==='SELECT') el.selectedIndex=0; else el.value='';
+function function openVehicleEditor(){
+  editId = null; $('editorTitle').textContent = 'Ново МПС';
+  [
+    'e_name','e_owner','e_odometer',
+    'e_go_start','e_go_plan','e_gtp',
+    'e_vignette_type','e_vignette_start',
+    'e_oil_km','e_oil_mo','e_of_km','e_ff_km',
+    'e_cabin_mo','e_air_km','e_pads_km',
+    'e_belt_km','e_belt_yr'
+  ].forEach(id=>{
+    const el = $(id); if(!el) return;
+    if(el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   });
-  delBtn.style.display='none'; editor.style.display='block';
+  $('delBtn').style.display = 'none';
+  $('editor').style.display = 'block';
 }
-function closeVehicleEditor(){ editor.style.display='none'; }
+
 function editVehicle(id){
-  const v=db.vehicles.find(x=>x.id===id); if(!v) return;
-  editId=id; editorTitle.textContent='Редакция';
-  e_name.value=v.name||''; e_owner.value=v.owner||''; e_odometer.value=v.odometer||'';
-  e_go_start.value=v.goStart||''; e_go_plan.value=String(v.goPlan||1);
-  e_gtp.value=v.gtp||''; e_vignette_type.value=String(v.vigType||12); e_vignette_start.value=v.vigStart||'';
-  e_oil_km.value=v.oilKm||''; e_oil_mo.value=v.oilMo||''; e_of_km.value=v.ofKm||''; e_ff_km.value=v.ffKm||'';
-  e_cabin_mo.value=v.cabinMo||''; e_air_km.value=v.airKm||''; e_pads_km.value=v.padsKm||'';
-  e_belt_km.value=v.beltKm||''; e_belt_yr.value=v.beltYr||'';
-  delBtn.style.display='inline-flex'; editor.style.display='block';
+  const v = db.vehicles.find(x=>x.id===id); if(!v) return;
+  editId = id; $('editorTitle').textContent = 'Редакция';
+  $('e_name').value = v.name||'';     $('e_owner').value = v.owner||'';
+  $('e_odometer').value = v.odometer||'';
+  $('e_go_start').value = v.goStart||''; $('e_go_plan').value = String(v.goPlan||1);
+  $('e_gtp').value = v.gtp||'';
+  $('e_vignette_type').value = String(v.vigType||12);
+  $('e_vignette_start').value = v.vigStart||'';
+  $('e_oil_km').value = v.oilKm||'';     $('e_oil_mo').value = v.oilMo||'';
+  $('e_of_km').value = v.ofKm||'';       $('e_ff_km').value = v.ffKm||'';
+  $('e_cabin_mo').value = v.cabinMo||''; $('e_air_km').value = v.airKm||'';
+  $('e_pads_km').value = v.padsKm||'';   $('e_belt_km').value = v.beltKm||'';
+  $('e_belt_yr').value = v.beltYr||'';
+  $('delBtn').style.display = 'inline-flex';
+  $('editor').style.display = 'block';
 }
+
 function saveVehicle(){
-  const v={
+  const v = {
     id: editId || Math.random().toString(36).slice(2),
-    name:e_name.value.trim(), owner:e_owner.value.trim(), odometer:Number(e_odometer.value||0),
-    goStart:e_go_start.value||null, goPlan:Number(e_go_plan.value||1),
-    gtp:e_gtp.value||null, vigType:Number(e_vignette_type.value||12), vigStart:e_vignette_start.value||null,
-    oilKm:Number(e_oil_km.value||0), oilMo:Number(e_oil_mo.value||0),
-    ofKm:Number(e_of_km.value||0), ffKm:Number(e_ff_km.value||0),
-    cabinMo:Number(e_cabin_mo.value||0), airKm:Number(e_air_km.value||0),
-    padsKm:Number(e_pads_km.value||0), beltKm:Number(e_belt_km.value||0), beltYr:Number(e_belt_yr.value||0)
+    name: $('e_name').value.trim(),
+    owner: $('e_owner').value.trim(),
+    odometer: Number($('e_odometer').value||0),
+
+    goStart: $('e_go_start').value || null,
+    goPlan: Number($('e_go_plan').value || 1),
+    gtp: $('e_gtp').value || null,
+
+    vigType: Number($('e_vignette_type').value || 12),
+    vigStart: $('e_vignette_start').value || null,
+
+    oilKm: Number($('e_oil_km').value || 0),
+    oilMo: Number($('e_oil_mo').value || 0),
+    ofKm:  Number($('e_of_km').value || 0),
+    ffKm:  Number($('e_ff_km').value || 0),
+    cabinMo:Number($('e_cabin_mo').value || 0),
+    airKm: Number($('e_air_km').value || 0),
+    padsKm:Number($('e_pads_km').value || 0),
+    beltKm:Number($('e_belt_km').value || 0),
+    beltYr:Number($('e_belt_yr').value || 0)
   };
+  if(editId){ db.vehicles = db.vehicles.map(x=>x.id===editId ? v : x); }
+  else { db.vehicles.push(v); }
+  save(); closeVehicleEditor(); renderAll();
+}
+
   if(editId){ db.vehicles=db.vehicles.map(x=>x.id===editId?v:x);} else { db.vehicles.push(v); }
   save(); closeVehicleEditor(); renderAll();
 }
