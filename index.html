@@ -283,6 +283,8 @@
 const KEY='autonotify_servicebook_v1';
 let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'}, vehicles:[], history:[] };
 let editId=null;
+  const $ = (id) => document.getElementById(id);
+
 
 function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); renderAll(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
@@ -446,6 +448,14 @@ function renderDashboard(){
       </div>`;
     }
   }).join('');
+}
+// Събира всички рендъри на едно място
+function renderAll(){
+  renderToday();      // горе "Днес: ..."
+  renderDashboard();  // картите
+  renderVehicles();   // списък МПС
+  renderHistory();    // история
+  renderSpark();      // кривата долу
 }
 
 /* render vehicles / history */
