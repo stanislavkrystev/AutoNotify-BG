@@ -3,20 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AutoNotify BG — Сервизна книжка (Calm Pastel + Timeline)</title>
+  <title>AutoNotify BG — Сервизна книжка</title>
   <meta name="theme-color" content="#f3f6ff" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <!-- приятелски, четим шрифт -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* sparkline */
-.spark{ width:100%; height:180px; }
-.sp-axis{ stroke:#dfe6ff; stroke-width:1; }
-.sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
-.sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
 
+  <style>
+    :root{
+      --bg:#f3f6ff; --text:#1b2a38; --muted:#5d6b7a;
+      --card: rgba(255,255,255,.85); --border:#e3e9fb;
+      --shadow: 0 10px 30px rgba(32,58,92,.10);
+      --accent:#5ba7ff; --accent-hover:#3f90f3;
+      --ok:#28c76f; --warn:#f9a826; --bad:#ff6b6b;
+      --r:14px; --pad:12px; --gap:10px;
+    }
     :root.dark{
       --bg:#0b1020; --text:#e8ecf1; --muted:#a8b3d1;
       --card: rgba(18,26,51,.88); --border:#1b274d;
@@ -24,6 +27,13 @@
       --accent:#5ba7ff; --accent-hover:#3f90f3;
       --ok:#9BE7A3; --warn:#FFD166; --bad:#FF8B8B;
     }
+
+    /* sparkline */
+    .spark{ width:100%; height:180px; }
+    .sp-axis{ stroke:#dfe6ff; stroke-width:1; }
+    .sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
+    .sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
+
     *{box-sizing:border-box}
     body{
       margin:0; min-height:100vh; color:var(--text);
@@ -110,20 +120,6 @@
     .watermark{opacity:.75; font-size:12px; color:var(--muted)}
     a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
-    /* timeline */
-    .timeline-wrap{ position:relative; }
-    .timeline-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
-    .timeline{ width:100%; height:160px; }
-    .tl-label{ font-size:12px; fill:var(--muted); }
-    .tl-line{ stroke:#cfe0ff; stroke-width:2; }
-    .tl-today{ stroke:#5ba7ff; stroke-width:2; stroke-dasharray:4 4; }
-    .tl-dot{ r:6; }
-    .tl-badge{ font-weight:700; }
-    .footer{
-      display:flex; align-items:center; gap:8px; color:var(--muted);
-      font-size:12px; padding:10px 0 20px;
-    }
-
     /* иконка */
     .icon{width:18px; height:18px; vertical-align:-3px; margin-right:6px; opacity:.9}
   </style>
@@ -165,16 +161,14 @@
     </div>
   </section>
 
- 
- <!-- SPARKLINE -->
-<section class="card" id="spark-wrap">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <h3>Натоварване по месеци <span id="spYear"></span></h3>
-    <div class="small" style="color:var(--muted)">брой събития с конкретна дата за избраната година</div>
-  </div>
-  <svg id="spark" class="spark"></svg>
-</section>
-
+  <!-- SPARKLINE -->
+  <section class="card" id="spark-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3>Натоварване по месеци <span id="spYear"></span></h3>
+      <div class="small" style="color:var(--muted)">брой събития с конкретна дата за избраната година</div>
+    </div>
+    <svg id="spark" class="spark"></svg>
+  </section>
 
   <!-- MPS -->
   <section id="tab-vehicles" class="card" style="display:none">
@@ -215,7 +209,7 @@
         </div>
       </div>
       <div class="col-4">
-        <label>Година на линията</label>
+        <label>Година на графиката</label>
         <select id="cfg_timeline_year"></select>
       </div>
     </div>
@@ -273,7 +267,7 @@
   </section>
 
   <!-- долен воден знак -->
-  <div class="footer">
+  <div class="footer watermark">
     Stanislav Krastev — <a class="link" href="mailto:stanislav90030@gmail.com">stanislav90030@gmail.com</a> — +359 883 482 854
   </div>
 </div>
@@ -283,10 +277,10 @@
 const KEY='autonotify_servicebook_v1';
 let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'}, vehicles:[], history:[] };
 let editId=null;
-  const $ = (id) => document.getElementById(id);
+// селектор за стабилно вземане на елементи
+const $ = (id) => document.getElementById(id);
 
-
-function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); renderAll(); }
+function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
 /* helpers */
@@ -297,9 +291,101 @@ const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 const kmClass=(n)=> n<=0?'bad':(n<=1000?'warn':'ok');
-const dayOfYear=(date,year)=>{ const d=new Date(date); const y=year||d.getFullYear(); const start=new Date(y,0,1); const t=new Date(d); t.setFullYear(y); return Math.floor((t-start)/86400000)+1; };
-const isLeap=(y)=> (new Date(y,1,29).getMonth()===1);
-  // === SPARKLINE (месечно натоварване) ===
+
+/* business */
+function tasksForVehicle(v){
+  const out=[]; const today=new Date();
+  if(v.goStart){
+    out.push({veh:v.name, type:'ГО изтича', date:addYears(v.goStart,1)});
+    const plan=Number(v.goPlan||1), inst=plan===1?[0]:(plan===2?[0,6]:[0,3,6,9]);
+    inst.forEach((m,i)=> out.push({veh:v.name, type:`ГО – вноска ${i+1}`, date:addMonths(v.goStart,m)}));
+  }
+  if(v.gtp){ out.push({veh:v.name, type:'ГТП изтича', date:addYears(v.gtp,1)}); }
+  if(v.vigStart && v.vigType){ out.push({veh:v.name, type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
+
+  const o=Number(v.odometer||0);
+  const kmTask=(label,lastKm,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
+  kmTask('Смяна масло',o,v.oilKm); kmTask('Маслен филтър',o,v.ofKm); kmTask('Горивен филтър',o,v.ffKm);
+  kmTask('Въздушен филтър',o,v.airKm); kmTask('Накладки',o,v.padsKm); kmTask('Ангренажен ремък (км)',o,v.beltKm);
+  if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
+  return out;
+}
+function allTasks(){
+  let arr=[]; db.vehicles.forEach(v=> arr=arr.concat(tasksForVehicle(v)));
+  arr.forEach(t=>{ if(t.date){ t.days=daysLeft(t.date); }});
+  arr.sort((a,b)=>{ const ad=(a.date?a.days:9e9), bd=(b.date?b.days:9e9); if(ad!==bd) return ad-bd; return (a.kmLeft??9e9)-(b.kmLeft??9e9); });
+  return arr;
+}
+
+/* today */
+function renderToday(){
+  const now = new Date();
+  $('todayBox').textContent = 'Днес: ' + now.toLocaleDateString('bg-BG');
+}
+
+/* dashboard */
+function iconId(type){
+  if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'i-go';
+  if(type.startsWith('ГТП')) return 'i-gtp';
+  if(type.startsWith('Винетка')) return 'i-vin';
+  if(type.includes('масло')) return 'i-oil';
+  if(type.includes('филтър')) return 'i-filter';
+  if(type.includes('Ангренажен')) return 'i-belt';
+  return 'i-go';
+}
+function renderDashboard(){
+  const L=$('todoList');
+  const tasks=allTasks().slice(0,24);
+  if(!tasks.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
+  L.innerHTML = tasks.map(t=>{
+    if(t.date){
+      const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
+      return `<div class="item">
+        <div>
+          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
+          <div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div>
+        </div>
+        <div class="badge ${cls}">${value}</div>
+      </div>`;
+    }else{
+      const left=t.kmLeft, cls=kmClass(left), value=(left<=0?'проср.':left+' км');
+      return `<div class="item">
+        <div>
+          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
+          <div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div>
+        </div>
+        <div class="badge ${cls}">${value}</div>
+      </div>`;
+    }
+  }).join('');
+}
+
+/* render vehicles / history */
+function renderVehicles(){
+  const L=$('vehicleList');
+  if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
+  L.innerHTML = db.vehicles.map(v=>`
+    <div class="item">
+      <div>
+        <div class="item-title">${v.name||'МПС'} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
+        <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
+      </div>
+      <div class="right">
+        <button class="btn secondary" onclick="editVehicle('${v.id}')">Редактирай</button>
+        <button class="btn secondary" onclick="downloadICS('${v.id}')">.ics</button>
+      </div>
+    </div>`).join('');
+}
+function renderHistory(){
+  const L=$('historyList');
+  if(!db.history.length){ L.innerHTML='<div class="item" style="justify-content:center">Все още няма записи.</div>'; return; }
+  L.innerHTML = db.history.map(h=>`<div class="item">
+    <div><b>${h.type}</b> • ${h.vehicle} — ${fmt(h.date)} • ${h.odometer||0} км</div>
+    <div class="item-sub">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
+  </div>`).join('');
+}
+
+/* SPARKLINE – месечно натоварване */
 function sparkYearValue(){
   const sel = db.cfg.timelineYear;
   return (sel==='current') ? new Date().getFullYear() : Number(sel)||new Date().getFullYear();
@@ -331,12 +417,11 @@ function buildSmoothPath(points){
 }
 function renderSpark(){
   const year = sparkYearValue();
-  const svg  = document.getElementById('spark');
-  if(!svg) return;
+  const svg  = $('spark'); if(!svg) return;
   const w    = svg.clientWidth || svg.parentElement.clientWidth;
   const h    = svg.clientHeight || 180;
   const padL = 28, padR = 16, padT = 16, padB = 26;
-  document.getElementById('spYear').textContent = year;
+  $('spYear').textContent = year;
 
   const values = monthlyBuckets(year);
   const maxVal = Math.max(1, ...values);
@@ -350,13 +435,11 @@ function renderSpark(){
   const ns='http://www.w3.org/2000/svg';
   svg.innerHTML='';
 
-  // ос X
   const axis=document.createElementNS(ns,'line');
   axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR);
   axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB);
   axis.setAttribute('class','sp-axis'); svg.appendChild(axis);
 
-  // деления по месеци
   for(let m=0;m<12;m++){
     const x=padL+m*stepX;
     const tick=document.createElementNS(ns,'line');
@@ -370,7 +453,6 @@ function renderSpark(){
     svg.appendChild(lbl);
   }
 
-  // крива + запълване
   const d = buildSmoothPath(pts);
   if(d){
     const area=document.createElementNS(ns,'path');
@@ -381,215 +463,8 @@ function renderSpark(){
   }
 }
 
-
-/* business */
-function tasksForVehicle(v){
-  const out=[]; const today=new Date();
-  if(v.goStart){
-    out.push({veh:v.name, type:'ГО изтича', date:addYears(v.goStart,1)});
-    const plan=Number(v.goPlan||1), inst=plan===1?[0]:(plan===2?[0,6]:[0,3,6,9]);
-    inst.forEach(m=> out.push({veh:v.name, type:`ГО – вноска ${m===0?1:(m/3+1)}`, date:addMonths(v.goStart,m)}));
-  }
-  if(v.gtp){ out.push({veh:v.name, type:'ГТП изтича', date:addYears(v.gtp,1)}); }
-  if(v.vigStart && v.vigType){ out.push({veh:v.name, type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
-
-  const o=Number(v.odometer||0);
-  const kmTask=(label,lastKm,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
-  kmTask('Смяна масло',o,v.oilKm); kmTask('Маслен филтър',o,v.ofKm); kmTask('Горивен филтър',o,v.ffKm);
-  kmTask('Въздушен филтър',o,v.airKm); kmTask('Накладки',o,v.padsKm); kmTask('Ангренажен ремък (км)',o,v.beltKm);
-  if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
-  return out;
-}
-function allTasks(){
-  let arr=[]; db.vehicles.forEach(v=> arr=arr.concat(tasksForVehicle(v)));
-  arr.forEach(t=>{ if(t.date){ t.days=daysLeft(t.date); }});
-  arr.sort((a,b)=>{ const ad=(a.date?a.days:9e9), bd=(b.date?b.days:9e9); if(ad!==bd) return ad-bd; return (a.kmLeft??9e9)-(b.kmLeft??9e9); });
-  return arr;
-}
-
-/* render top "today" */
-function renderToday(){
-  const now = new Date();
-  document.getElementById('todayBox').textContent = 'Днес: ' + now.toLocaleDateString('bg-BG');
-}
-
-/* render dashboard */
-function iconId(type){
-  if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'i-go';
-  if(type.startsWith('ГТП')) return 'i-gtp';
-  if(type.startsWith('Винетка')) return 'i-vin';
-  if(type.includes('масло')) return 'i-oil';
-  if(type.includes('филтър')) return 'i-filter';
-  if(type.includes('Ангренажен')) return 'i-belt';
-  return 'i-go';
-}
-function renderDashboard(){
-  const L=document.getElementById('todoList');
-  const tasks=allTasks().slice(0,24);
-  if(!tasks.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
-  L.innerHTML = tasks.map(t=>{
-    if(t.date){
-      const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
-      return `<div class="item">
-        <div>
-          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
-          <div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div>
-        </div>
-        <div class="badge ${cls}">${value}</div>
-      </div>`;
-    }else{
-      const left=t.kmLeft, cls=kmClass(left), value=(left<=0?'проср.':left+' км');
-      return `<div class="item">
-        <div>
-          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
-          <div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div>
-        </div>
-        <div class="badge ${cls}">${value}</div>
-      </div>`;
-    }
-  }).join('');
-}
-// Събира всички рендъри на едно място
-function renderAll(){
-  renderToday();      // горе "Днес: ..."
-  renderDashboard();  // картите
-  renderVehicles();   // списък МПС
-  renderHistory();    // история
-  renderSpark();      // кривата долу
-}
-
-/* render vehicles / history */
-function renderVehicles(){
-  const L=document.getElementById('vehicleList');
-  if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
-  L.innerHTML = db.vehicles.map(v=>`
-    <div class="item">
-      <div>
-        <div class="item-title">${v.name||'МПС'} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
-        <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
-      </div>
-      <div class="right">
-        <button class="btn secondary" onclick="editVehicle('${v.id}')">Редактирай</button>
-        <button class="btn secondary" onclick="downloadICS('${v.id}')">.ics</button>
-      </div>
-    </div>`).join('');
-}
-function renderHistory(){
-  const L=document.getElementById('historyList');
-  if(!db.history.length){ L.innerHTML='<div class="item" style="justify-content:center">Все още няма записи.</div>'; return; }
-  L.innerHTML = db.history.map(h=>`<div class="item">
-    <div><b>${h.type}</b> • ${h.vehicle} — ${fmt(h.date)} • ${h.odometer||0} км</div>
-    <div class="item-sub">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
-  </div>`).join('');
-}
-
-/* ===== Timeline ===== */
-function timelineYearValue(){
-  const sel = db.cfg.timelineYear;
-  if(sel==='current') return new Date().getFullYear();
-  return Number(sel)||new Date().getFullYear();
-}
-function tasksWithDates(){
-  return allTasks().filter(t=> !!t.date);
-}
-function renderTimeline(){
-  const year = timelineYearValue();
-  document.getElementById('tlYearLabel').textContent = year;
-  const svg = document.getElementById('timeline');
-  const width = svg.clientWidth || svg.parentElement.clientWidth;
-  const height = svg.clientHeight || 160;
-  const pad = 30; const lineY = Math.floor(height/2)+10;
-  const days = isLeap(year)?366:365;
-
-  // build SVG
-  const ns = 'http://www.w3.org/2000/svg';
-  svg.innerHTML='';
-
-  // baseline
-  const line = document.createElementNS(ns,'line');
-  line.setAttribute('x1', pad); line.setAttribute('x2', width-pad);
-  line.setAttribute('y1', lineY); line.setAttribute('y2', lineY);
-  line.setAttribute('class','tl-line');
-  line.setAttribute('stroke','currentColor'); line.style.strokeOpacity = (getComputedStyle(document.documentElement).getPropertyValue('--muted')) ? 0.3 : 0.3;
-  svg.appendChild(line);
-
-  // month ticks
-  for(let m=0;m<12;m++){
-    const d = new Date(year, m, 1);
-    const day = dayOfYear(d,year);
-    const x = pad + (day-1)*(width-2*pad)/days;
-    const tick = document.createElementNS(ns,'line');
-    tick.setAttribute('x1',x); tick.setAttribute('x2',x);
-    tick.setAttribute('y1', lineY-6); tick.setAttribute('y2', lineY+6);
-    tick.setAttribute('stroke','#cfe0ff'); tick.setAttribute('stroke-width','1');
-    svg.appendChild(tick);
-
-    const lbl = document.createElementNS(ns,'text');
-    lbl.setAttribute('x',x+2); lbl.setAttribute('y', lineY-10);
-    lbl.setAttribute('class','tl-label');
-    lbl.textContent = d.toLocaleString('bg-BG',{month:'short'});
-    svg.appendChild(lbl);
-  }
-
-  // today marker (само ако годината е текуща)
-  const now = new Date();
-  if(year===now.getFullYear()){
-    const dx = pad + (dayOfYear(now,year)-1)*(width-2*pad)/days;
-    const tline = document.createElementNS(ns,'line');
-    tline.setAttribute('x1',dx); tline.setAttribute('x2',dx);
-    tline.setAttribute('y1', lineY-45); tline.setAttribute('y2', lineY+45);
-    tline.setAttribute('class','tl-today');
-    tline.setAttribute('stroke','#5ba7ff');
-    svg.appendChild(tline);
-
-    const ttxt = document.createElementNS(ns,'text');
-    ttxt.setAttribute('x',dx+4); ttxt.setAttribute('y', lineY-50);
-    ttxt.setAttribute('class','tl-label');
-    ttxt.textContent='днес';
-    svg.appendChild(ttxt);
-  }
-
-  // events
-  const events = tasksWithDates();
-  // разнеси етикетите (редуват се над/под)
-  events.forEach((ev,i)=>{
-    const d = new Date(ev.date); d.setFullYear(year); // нормализирай в тази година
-    const dd = dayOfYear(d,year);
-    const x = pad + (dd-1)*(width-2*pad)/days;
-    const y = lineY + (i%2===0? -24 : 24);
-
-    const dot = document.createElementNS(ns,'circle');
-    dot.setAttribute('cx',x); dot.setAttribute('cy',lineY);
-    dot.setAttribute('class','tl-dot');
-    let color = '#28c76f'; // ok
-    const left = daysLeft(ev.date);
-    if(left<=0) color = '#ff6b6b'; else if(left<=30) color = '#f9a826';
-    dot.setAttribute('fill', color);
-    svg.appendChild(dot);
-
-    // label background
-    const rect = document.createElementNS(ns,'rect');
-    const text = document.createElementNS(ns,'text');
-    const label = `${ev.type} • ${ev.veh||'МПС'} • ${fmt(ev.date)}`;
-    text.textContent = label;
-    text.setAttribute('x', x+8); text.setAttribute('y', y);
-    text.setAttribute('class','tl-label');
-    svg.appendChild(text);
-    // crude bbox estimate (no getBBox until in DOM): use text length
-    const w = 7.2*label.length; const h = 18;
-    rect.setAttribute('x', x+6); rect.setAttribute('y', y-14);
-    rect.setAttribute('rx','8'); rect.setAttribute('ry','8');
-    rect.setAttribute('width', w); rect.setAttribute('height', h);
-    rect.setAttribute('fill', 'white');
-    rect.setAttribute('stroke', '#e3e9fb');
-    rect.setAttribute('opacity','0.85');
-    // ensure rect behind text
-    svg.insertBefore(rect, text);
-  });
-}
-
-/* ===== CRUD / ICS (същото като преди) ===== */
-function function openVehicleEditor(){
+/* CRUD / ICS */
+function openVehicleEditor(){
   editId = null; $('editorTitle').textContent = 'Ново МПС';
   [
     'e_name','e_owner','e_odometer',
@@ -605,60 +480,39 @@ function function openVehicleEditor(){
   $('delBtn').style.display = 'none';
   $('editor').style.display = 'block';
 }
-
+function closeVehicleEditor(){ $('editor').style.display='none'; }
 function editVehicle(id){
-  const v = db.vehicles.find(x=>x.id===id); if(!v) return;
-  editId = id; $('editorTitle').textContent = 'Редакция';
-  $('e_name').value = v.name||'';     $('e_owner').value = v.owner||'';
-  $('e_odometer').value = v.odometer||'';
-  $('e_go_start').value = v.goStart||''; $('e_go_plan').value = String(v.goPlan||1);
-  $('e_gtp').value = v.gtp||'';
-  $('e_vignette_type').value = String(v.vigType||12);
-  $('e_vignette_start').value = v.vigStart||'';
-  $('e_oil_km').value = v.oilKm||'';     $('e_oil_mo').value = v.oilMo||'';
-  $('e_of_km').value = v.ofKm||'';       $('e_ff_km').value = v.ffKm||'';
-  $('e_cabin_mo').value = v.cabinMo||''; $('e_air_km').value = v.airKm||'';
-  $('e_pads_km').value = v.padsKm||'';   $('e_belt_km').value = v.beltKm||'';
-  $('e_belt_yr').value = v.beltYr||'';
-  $('delBtn').style.display = 'inline-flex';
-  $('editor').style.display = 'block';
+  const v=db.vehicles.find(x=>x.id===id); if(!v) return;
+  editId=id; $('editorTitle').textContent='Редакция';
+  $('e_name').value=v.name||'';     $('e_owner').value=v.owner||'';
+  $('e_odometer').value=v.odometer||'';
+  $('e_go_start').value=v.goStart||''; $('e_go_plan').value=String(v.goPlan||1);
+  $('e_gtp').value=v.gtp||''; $('e_vignette_type').value=String(v.vigType||12);
+  $('e_vignette_start').value=v.vigStart||'';
+  $('e_oil_km').value=v.oilKm||''; $('e_oil_mo').value=v.oilMo||'';
+  $('e_of_km').value=v.ofKm||'';   $('e_ff_km').value=v.ffKm||'';
+  $('e_cabin_mo').value=v.cabinMo||''; $('e_air_km').value=v.airKm||'';
+  $('e_pads_km').value=v.padsKm||''; $('e_belt_km').value=v.beltKm||'';
+  $('e_belt_yr').value=v.beltYr||'';
+  $('delBtn').style.display='inline-flex'; $('editor').style.display='block';
 }
-
 function saveVehicle(){
-  const v = {
+  const v={
     id: editId || Math.random().toString(36).slice(2),
-    name: $('e_name').value.trim(),
-    owner: $('e_owner').value.trim(),
-    odometer: Number($('e_odometer').value||0),
-
-    goStart: $('e_go_start').value || null,
-    goPlan: Number($('e_go_plan').value || 1),
-    gtp: $('e_gtp').value || null,
-
-    vigType: Number($('e_vignette_type').value || 12),
-    vigStart: $('e_vignette_start').value || null,
-
-    oilKm: Number($('e_oil_km').value || 0),
-    oilMo: Number($('e_oil_mo').value || 0),
-    ofKm:  Number($('e_of_km').value || 0),
-    ffKm:  Number($('e_ff_km').value || 0),
-    cabinMo:Number($('e_cabin_mo').value || 0),
-    airKm: Number($('e_air_km').value || 0),
-    padsKm:Number($('e_pads_km').value || 0),
-    beltKm:Number($('e_belt_km').value || 0),
-    beltYr:Number($('e_belt_yr').value || 0)
+    name:$('e_name').value.trim(), owner:$('e_owner').value.trim(), odometer:Number($('e_odometer').value||0),
+    goStart:$('e_go_start').value||null, goPlan:Number($('e_go_plan').value||1),
+    gtp:$('e_gtp').value||null, vigType:Number($('e_vignette_type').value||12), vigStart:$('e_vignette_start').value||null,
+    oilKm:Number($('e_oil_km').value||0), oilMo:Number($('e_oil_mo').value||0),
+    ofKm:Number($('e_of_km').value||0), ffKm:Number($('e_ff_km').value||0),
+    cabinMo:Number($('e_cabin_mo').value||0), airKm:Number($('e_air_km').value||0),
+    padsKm:Number($('e_pads_km').value||0), beltKm:Number($('e_belt_km').value||0), beltYr:Number($('e_belt_yr').value||0)
   };
-  if(editId){ db.vehicles = db.vehicles.map(x=>x.id===editId ? v : x); }
-  else { db.vehicles.push(v); }
-  save(); closeVehicleEditor(); renderAll();
-}
-
   if(editId){ db.vehicles=db.vehicles.map(x=>x.id===editId?v:x);} else { db.vehicles.push(v); }
   save(); closeVehicleEditor(); renderAll();
 }
 function deleteVehicle(){ if(!editId) return; db.vehicles=db.vehicles.filter(x=>x.id!==editId); save(); closeVehicleEditor(); renderAll(); }
 
-/* ics */
+/* ics helpers */
 function makeIcsForVehicle(v){
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//AutoNotifyBG//ServiceBook//BG'];
   const addEvent=(title,date)=>{
@@ -688,18 +542,18 @@ function exportAllICS(){
 
 /* settings */
 function applyCfgUI(){
-  cfg_hour.value=db.cfg.hour||'09:00'; cfg_d30.checked=!!db.cfg.d30; cfg_d10.checked=!!db.cfg.d10; cfg_d5.checked=!!db.cfg.d5; cfg_d1.checked=!!db.cfg.d1;
-  // timeline year options
+  $('cfg_hour').value=db.cfg.hour||'09:00';
+  $('cfg_d30').checked=!!db.cfg.d30; $('cfg_d10').checked=!!db.cfg.d10; $('cfg_d5').checked=!!db.cfg.d5; $('cfg_d1').checked=!!db.cfg.d1;
   const nowY = new Date().getFullYear();
   const opts = ['current', nowY-1, nowY, nowY+1, nowY+2];
-  cfg_timeline_year.innerHTML = opts.map(v=>`<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`).join('');
+  $('cfg_timeline_year').innerHTML = opts.map(v=>`<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`).join('');
 }
 ;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1','cfg_timeline_year'].forEach(id=>{
   document.addEventListener('change', (e)=> {
     if(e.target && e.target.id===id){
-      db.cfg.hour=cfg_hour.value; db.cfg.d30=cfg_d30.checked; db.cfg.d10=cfg_d10.checked; db.cfg.d5=cfg_d5.checked; db.cfg.d1=cfg_d1.checked;
-      db.cfg.timelineYear = cfg_timeline_year.value;
-      save(); renderTimeline();
+      db.cfg.hour=$('cfg_hour').value; db.cfg.d30=$('cfg_d30').checked; db.cfg.d10=$('cfg_d10').checked; db.cfg.d5=$('cfg_d5').checked; db.cfg.d1=$('cfg_d1').checked;
+      db.cfg.timelineYear = $('cfg_timeline_year').value;
+      save(); renderSpark();
     }
   });
 });
@@ -708,7 +562,7 @@ function applyCfgUI(){
 document.querySelectorAll('.nav .btn').forEach(b=>{
   b.addEventListener('click', ()=>{
     const tab=b.dataset.tab;
-    ['dashboard','vehicles','history','settings'].forEach(t=>{ document.getElementById('tab-'+t)?.style && (document.getElementById('tab-'+t).style.display=(t===tab?'block':'none')); });
+    ['dashboard','vehicles','history','settings'].forEach(t=>{ const el=$('tab-'+t); if(el) el.style.display=(t===tab?'block':'none'); });
   });
 });
 
@@ -716,24 +570,33 @@ document.querySelectorAll('.nav .btn').forEach(b=>{
 function applyTheme(){
   const mode = localStorage.getItem('theme') || 'light';
   document.documentElement.classList.toggle('dark', mode==='dark');
-  document.getElementById('themeBtn').innerHTML = (mode==='dark'?'Светло':'Тъмно');
+  $('themeBtn').innerHTML = (mode==='dark'?'Светло':'Тъмно');
 }
-document.getElementById('themeBtn').addEventListener('click', ()=>{
+$('themeBtn').addEventListener('click', ()=>{
   const mode = (localStorage.getItem('theme') || 'light') === 'light' ? 'dark' : 'light';
   localStorage.setItem('theme', mode); applyTheme();
 });
 
 /* pwa install */
-let deferredPrompt=null; const installBtn=document.getElementById('installBtn');
+let deferredPrompt=null; const installBtn=$('installBtn');
 window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-flex'; });
 if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; }); }
+
+/* render all */
+function renderAll(){
+  renderToday();
+  renderDashboard();
+  renderVehicles();
+  renderHistory();
+  renderSpark();
+}
 
 /* boot */
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error)); }
 applyTheme();
-renderToday();
 load();
-window.addEventListener('resize', ()=> renderTimeline()); // responsive timeline
+renderAll();
+window.addEventListener('resize', ()=> renderSpark());
 </script>
 </body>
 </html>
