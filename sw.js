@@ -1,4 +1,4 @@
-const CACHE='autonotify-servicebook-mvp-v1';
+const CACHE='autonotify-servicebook-mvp-v2';
 const ASSETS=[
   './','./index.html','./manifest.json',
   './bg-portrait-1080x1920.webp','./bg-landscape-1920x1080.webp',
