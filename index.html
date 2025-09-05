@@ -7,7 +7,6 @@
   <meta name="theme-color" content="#f3f6ff" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <!-- приятелски, четим шрифт -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -91,6 +90,7 @@
 
     .row{display:grid; grid-template-columns:repeat(12,1fr); gap:var(--gap)}
     .col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+
     label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
     input,select,textarea{
       width:100%; padding:10px 12px; border-radius:12px;
@@ -99,7 +99,6 @@
     }
     input:focus,select:focus,textarea:focus{outline:none; border-color:#b9ccff; box-shadow:0 0 0 3px rgba(185,204,255,.35)}
 
-    /* табло */
     #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
     .item{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -120,12 +119,11 @@
     .watermark{opacity:.75; font-size:12px; color:var(--muted)}
     a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
-    /* иконка */
     .icon{width:18px; height:18px; vertical-align:-3px; margin-right:6px; opacity:.9}
   </style>
 </head>
 <body>
-<!-- SVG sprite (икони) -->
+<!-- SVG sprite -->
 <svg width="0" height="0" style="position:absolute;opacity:0;pointer-events:none">
   <symbol id="i-go" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm1 5v5.2l4 2.3-.8 1.4L11 14V7h2Z"/></symbol>
   <symbol id="i-gtp" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4h10l2 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8l2-4Zm0 4h10"/></symbol>
@@ -182,7 +180,7 @@
     <div id="vehicleList"></div>
   </section>
 
-  <!-- ISTORIA -->
+  <!-- HISTORY -->
   <section id="tab-history" class="card" style="display:none">
     <div class="right" style="justify-content:space-between; margin-bottom:8px">
       <h3>История</h3>
@@ -191,7 +189,7 @@
     <div id="historyList"></div>
   </section>
 
-  <!-- NASTROYKI -->
+  <!-- SETTINGS -->
   <section id="tab-settings" class="card" style="display:none">
     <h3>Настройки</h3>
     <div class="row">
@@ -266,7 +264,6 @@
     </div>
   </section>
 
-  <!-- долен воден знак -->
   <div class="footer watermark">
     Stanislav Krastev — <a class="link" href="mailto:stanislav90030@gmail.com">stanislav90030@gmail.com</a> — +359 883 482 854
   </div>
@@ -277,7 +274,6 @@
 const KEY='autonotify_servicebook_v1';
 let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'}, vehicles:[], history:[] };
 let editId=null;
-// селектор за стабилно вземане на елементи
 const $ = (id) => document.getElementById(id);
 
 function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
@@ -302,11 +298,10 @@ function tasksForVehicle(v){
   }
   if(v.gtp){ out.push({veh:v.name, type:'ГТП изтича', date:addYears(v.gtp,1)}); }
   if(v.vigStart && v.vigType){ out.push({veh:v.name, type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
-
   const o=Number(v.odometer||0);
-  const kmTask=(label,lastKm,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
-  kmTask('Смяна масло',o,v.oilKm); kmTask('Маслен филтър',o,v.ofKm); kmTask('Горивен филтър',o,v.ffKm);
-  kmTask('Въздушен филтър',o,v.airKm); kmTask('Накладки',o,v.padsKm); kmTask('Ангренажен ремък (км)',o,v.beltKm);
+  const kmTask=(label,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
+  kmTask('Смяна масло',v.oilKm); kmTask('Маслен филтър',v.ofKm); kmTask('Горивен филтър',v.ffKm);
+  kmTask('Въздушен филтър',v.airKm); kmTask('Накладки',v.padsKm); kmTask('Ангренажен ремък (км)',v.beltKm);
   if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
   return out;
 }
@@ -360,7 +355,7 @@ function renderDashboard(){
   }).join('');
 }
 
-/* render vehicles / history */
+/* vehicles & history */
 function renderVehicles(){
   const L=$('vehicleList');
   if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
@@ -385,7 +380,7 @@ function renderHistory(){
   </div>`).join('');
 }
 
-/* SPARKLINE – месечно натоварване */
+/* SPARKLINE */
 function sparkYearValue(){
   const sel = db.cfg.timelineYear;
   return (sel==='current') ? new Date().getFullYear() : Number(sel)||new Date().getFullYear();
@@ -467,12 +462,9 @@ function renderSpark(){
 function openVehicleEditor(){
   editId = null; $('editorTitle').textContent = 'Ново МПС';
   [
-    'e_name','e_owner','e_odometer',
-    'e_go_start','e_go_plan','e_gtp',
-    'e_vignette_type','e_vignette_start',
-    'e_oil_km','e_oil_mo','e_of_km','e_ff_km',
-    'e_cabin_mo','e_air_km','e_pads_km',
-    'e_belt_km','e_belt_yr'
+    'e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp',
+    'e_vignette_type','e_vignette_start','e_oil_km','e_oil_mo','e_of_km','e_ff_km',
+    'e_cabin_mo','e_air_km','e_pads_km','e_belt_km','e_belt_yr'
   ].forEach(id=>{
     const el = $(id); if(!el) return;
     if(el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
@@ -484,13 +476,13 @@ function closeVehicleEditor(){ $('editor').style.display='none'; }
 function editVehicle(id){
   const v=db.vehicles.find(x=>x.id===id); if(!v) return;
   editId=id; $('editorTitle').textContent='Редакция';
-  $('e_name').value=v.name||'';     $('e_owner').value=v.owner||'';
+  $('e_name').value=v.name||''; $('e_owner').value=v.owner||'';
   $('e_odometer').value=v.odometer||'';
   $('e_go_start').value=v.goStart||''; $('e_go_plan').value=String(v.goPlan||1);
   $('e_gtp').value=v.gtp||''; $('e_vignette_type').value=String(v.vigType||12);
   $('e_vignette_start').value=v.vigStart||'';
   $('e_oil_km').value=v.oilKm||''; $('e_oil_mo').value=v.oilMo||'';
-  $('e_of_km').value=v.ofKm||'';   $('e_ff_km').value=v.ffKm||'';
+  $('e_of_km').value=v.ofKm||''; $('e_ff_km').value=v.ffKm||'';
   $('e_cabin_mo').value=v.cabinMo||''; $('e_air_km').value=v.airKm||'';
   $('e_pads_km').value=v.padsKm||''; $('e_belt_km').value=v.beltKm||'';
   $('e_belt_yr').value=v.beltYr||'';
@@ -511,6 +503,8 @@ function saveVehicle(){
   save(); closeVehicleEditor(); renderAll();
 }
 function deleteVehicle(){ if(!editId) return; db.vehicles=db.vehicles.filter(x=>x.id!==editId); save(); closeVehicleEditor(); renderAll(); }
+
+function clearHistory(){ db.history=[]; save(); renderHistory(); }
 
 /* ics helpers */
 function makeIcsForVehicle(v){
@@ -542,16 +536,26 @@ function exportAllICS(){
 
 /* settings */
 function applyCfgUI(){
-  $('cfg_hour').value=db.cfg.hour||'09:00';
-  $('cfg_d30').checked=!!db.cfg.d30; $('cfg_d10').checked=!!db.cfg.d10; $('cfg_d5').checked=!!db.cfg.d5; $('cfg_d1').checked=!!db.cfg.d1;
+  $('cfg_hour').value = db.cfg.hour || '09:00';
+  $('cfg_d30').checked = !!db.cfg.d30;
+  $('cfg_d10').checked = !!db.cfg.d10;
+  $('cfg_d5').checked  = !!db.cfg.d5;
+  $('cfg_d1').checked  = !!db.cfg.d1;
+
   const nowY = new Date().getFullYear();
   const opts = ['current', nowY-1, nowY, nowY+1, nowY+2];
-  $('cfg_timeline_year').innerHTML = opts.map(v=>`<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`).join('');
+  $('cfg_timeline_year').innerHTML = opts.map(v =>
+    `<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`
+  ).join('');
 }
 ;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1','cfg_timeline_year'].forEach(id=>{
   document.addEventListener('change', (e)=> {
     if(e.target && e.target.id===id){
-      db.cfg.hour=$('cfg_hour').value; db.cfg.d30=$('cfg_d30').checked; db.cfg.d10=$('cfg_d10').checked; db.cfg.d5=$('cfg_d5').checked; db.cfg.d1=$('cfg_d1').checked;
+      db.cfg.hour = $('cfg_hour').value;
+      db.cfg.d30  = $('cfg_d30').checked;
+      db.cfg.d10  = $('cfg_d10').checked;
+      db.cfg.d5   = $('cfg_d5').checked;
+      db.cfg.d1   = $('cfg_d1').checked;
       db.cfg.timelineYear = $('cfg_timeline_year').value;
       save(); renderSpark();
     }
@@ -561,8 +565,11 @@ function applyCfgUI(){
 /* nav */
 document.querySelectorAll('.nav .btn').forEach(b=>{
   b.addEventListener('click', ()=>{
-    const tab=b.dataset.tab;
-    ['dashboard','vehicles','history','settings'].forEach(t=>{ const el=$('tab-'+t); if(el) el.style.display=(t===tab?'block':'none'); });
+    const tab = b.dataset.tab;
+    ['dashboard','vehicles','history','settings'].forEach(t=>{
+      const el = $('tab-'+t);
+      if(el) el.style.display = (t===tab ? 'block' : 'none');
+    });
   });
 });
 
@@ -570,7 +577,7 @@ document.querySelectorAll('.nav .btn').forEach(b=>{
 function applyTheme(){
   const mode = localStorage.getItem('theme') || 'light';
   document.documentElement.classList.toggle('dark', mode==='dark');
-  $('themeBtn').innerHTML = (mode==='dark'?'Светло':'Тъмно');
+  $('themeBtn').textContent = (mode==='dark' ? 'Светло' : 'Тъмно');
 }
 $('themeBtn').addEventListener('click', ()=>{
   const mode = (localStorage.getItem('theme') || 'light') === 'light' ? 'dark' : 'light';
