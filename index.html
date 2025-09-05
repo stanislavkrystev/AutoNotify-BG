@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AutoNotify BG — Сервизна книжка (Calm Pastel)</title>
+  <title>AutoNotify BG — Сервизна книжка (Calm Pastel + Timeline)</title>
   <meta name="theme-color" content="#f3f6ff" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
@@ -12,25 +12,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* Палитра — спокойни пастели */
-      --bg:#f3f6ff;
-      --text:#1b2a38;
-      --muted:#5d6b7a;
-
-      --card: rgba(255,255,255,.85);
-      --border:#e3e9fb;
+      --bg:#f3f6ff; --text:#1b2a38; --muted:#5d6b7a;
+      --card: rgba(255,255,255,.85); --border:#e3e9fb;
       --shadow: 0 10px 30px rgba(32,58,92,.10);
-
-      --accent:#5ba7ff;     /* бутони/акценти */
-      --accent-hover:#3f90f3;
-
-      --ok:#28c76f;         /* статуси */
-      --warn:#f9a826;
-      --bad:#ff6b6b;
-
+      --accent:#5ba7ff; --accent-hover:#3f90f3;
+      --ok:#28c76f; --warn:#f9a826; --bad:#ff6b6b;
       --r:14px; --pad:12px; --gap:10px;
     }
-
+    :root.dark{
+      --bg:#0b1020; --text:#e8ecf1; --muted:#a8b3d1;
+      --card: rgba(18,26,51,.88); --border:#1b274d;
+      --shadow: 0 10px 30px rgba(0,0,0,.28);
+      --accent:#5ba7ff; --accent-hover:#3f90f3;
+      --ok:#9BE7A3; --warn:#FFD166; --bad:#FF8B8B;
+    }
     *{box-sizing:border-box}
     body{
       margin:0; min-height:100vh; color:var(--text);
@@ -40,7 +35,6 @@
         radial-gradient(1000px 600px at 90% 110%, #f7f0ff 0%, transparent 55%),
         linear-gradient(180deg, #f7fbff 0%, #f3f6ff 100%);
     }
-    /* снимка + БЕЛ воал (изсветляване) */
     body::before{
       content:""; position:fixed; inset:0; z-index:-2;
       background:url('./bg-portrait-1080x1920.webp') center/cover no-repeat;
@@ -57,12 +51,19 @@
         linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.55));
       mix-blend-mode: lighten;
     }
+    :root.dark body::after{
+      background:
+       radial-gradient(1200px 700px at 15% -10%, rgba(0,0,0,.32), transparent 60%),
+       radial-gradient(1000px 600px at 90% 110%, rgba(0,0,0,.32), transparent 55%),
+       linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.38));
+      mix-blend-mode: normal;
+    }
 
-    /* Лейаут */
     .app{max-width:1180px; margin:0 auto; padding:18px}
     .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px}
     .brand{font-weight:700}
     .nav{display:flex; gap:8px; flex-wrap:wrap}
+    .today{color:var(--muted); font-weight:600}
 
     .btn{
       padding:10px 14px; border-radius:999px;
@@ -90,7 +91,7 @@
     }
     input:focus,select:focus,textarea:focus{outline:none; border-color:#b9ccff; box-shadow:0 0 0 3px rgba(185,204,255,.35)}
 
-    /* Табло – решетка + карти */
+    /* табло */
     #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
     .item{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -103,10 +104,7 @@
       min-width:98px; text-align:center; padding:8px 10px; border-radius:10px; font-weight:700;
       background:#eef5ff; border:1px solid #d7e6ff; color:#2d4c7a;
     }
-    .ok   { color:var(--ok) }
-    .warn { color:var(--warn) }
-    .bad  { color:var(--bad) }
-
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
     .chips{display:flex; gap:6px; flex-wrap:wrap}
     .chip{padding:3px 10px; border-radius:999px; border:1px solid var(--border); font-size:12px; background:#fff}
     .sep{height:1px; background:var(--border); opacity:.8; margin:8px 0}
@@ -114,18 +112,35 @@
     .watermark{opacity:.75; font-size:12px; color:var(--muted)}
     a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
-    /* цветни „точки“ по тип */
-    .dot{display:inline-block; width:10px; height:10px; border-radius:999px; margin-right:8px}
-    .dot-go{background:#5ba7ff}     /* ГО */
-    .dot-gtp{background:#7dd3fc}    /* ГТП */
-    .dot-vin{background:#ffd166}    /* винетка */
-    .dot-oil{background:#ffb86b}    /* масло */
-    .dot-filter{background:#a7f3d0} /* филтри */
-    .dot-brake{background:#ff8b8b}  /* накладки */
-    .dot-belt{background:#c7b7ff}   /* ремък */
+    /* timeline */
+    .timeline-wrap{ position:relative; }
+    .timeline-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+    .timeline{ width:100%; height:160px; }
+    .tl-label{ font-size:12px; fill:var(--muted); }
+    .tl-line{ stroke:#cfe0ff; stroke-width:2; }
+    .tl-today{ stroke:#5ba7ff; stroke-width:2; stroke-dasharray:4 4; }
+    .tl-dot{ r:6; }
+    .tl-badge{ font-weight:700; }
+    .footer{
+      display:flex; align-items:center; gap:8px; color:var(--muted);
+      font-size:12px; padding:10px 0 20px;
+    }
+
+    /* иконка */
+    .icon{width:18px; height:18px; vertical-align:-3px; margin-right:6px; opacity:.9}
   </style>
 </head>
 <body>
+<!-- SVG sprite (икони) -->
+<svg width="0" height="0" style="position:absolute;opacity:0;pointer-events:none">
+  <symbol id="i-go" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm1 5v5.2l4 2.3-.8 1.4L11 14V7h2Z"/></symbol>
+  <symbol id="i-gtp" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4h10l2 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8l2-4Zm0 4h10"/></symbol>
+  <symbol id="i-vin" viewBox="0 0 24 24"><path fill="currentColor" d="M4 7h16v10H4z"/><path fill="currentColor" d="M6 5h12v2H6z"/></symbol>
+  <symbol id="i-oil" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2s4 5 4 7a4 4 0 1 1-8 0c0-2 4-7 4-7Z"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16v2l-6 5v5l-4-2v-3L4 7V5Z"/></symbol>
+  <symbol id="i-belt" viewBox="0 0 24 24"><path fill="currentColor" d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm3 0a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z"/></symbol>
+</svg>
+
 <div class="app">
   <div class="top">
     <div class="brand">🚗 AutoNotify BG — Сервизна книжка</div>
@@ -134,8 +149,10 @@
       <button class="btn" data-tab="vehicles">МПС</button>
       <button class="btn" data-tab="history">История</button>
       <button class="btn secondary" data-tab="settings">Настройки</button>
+      <button class="btn secondary" id="themeBtn">Тъмно</button>
       <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
     </div>
+    <div class="today" id="todayBox"></div>
   </div>
 
   <!-- TABLO -->
@@ -148,6 +165,15 @@
       <div class="chip"><span class="warn">жълто</span> — &lt; 30 дни или &lt; 1000 км</div>
       <div class="chip"><span class="bad">червено</span> — просрочено</div>
     </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="card timeline-wrap">
+    <div class="timeline-head">
+      <h3>Годишна линия <span id="tlYearLabel"></span></h3>
+      <div class="small" style="color:var(--muted)">долният панел визуализира всички задачи с конкретна дата</div>
+    </div>
+    <svg id="timeline" class="timeline"></svg>
   </section>
 
   <!-- MPS -->
@@ -179,7 +205,7 @@
         <label>Час за напомняния</label>
         <input id="cfg_hour" type="time" value="09:00" />
       </div>
-      <div class="col-8">
+      <div class="col-4">
         <label>Предизвестие (дни)</label>
         <div class="chips">
           <label class="chip"><input id="cfg_d30" type="checkbox" checked/> 30</label>
@@ -187,6 +213,10 @@
           <label class="chip"><input id="cfg_d5"  type="checkbox" checked/> 5</label>
           <label class="chip"><input id="cfg_d1"  type="checkbox" checked/> 1</label>
         </div>
+      </div>
+      <div class="col-4">
+        <label>Година на линията</label>
+        <select id="cfg_timeline_year"></select>
       </div>
     </div>
     <div class="sep"></div>
@@ -241,13 +271,19 @@
       <button class="btn secondary" id="delBtn" style="display:none" onclick="deleteVehicle()">Изтрий</button>
     </div>
   </section>
+
+  <!-- долен воден знак -->
+  <div class="footer">
+    Stanislav Krastev — <a class="link" href="mailto:stanislav90030@gmail.com">stanislav90030@gmail.com</a> — +359 883 482 854
+  </div>
 </div>
 
 <script>
 /* ===== model & storage ===== */
 const KEY='autonotify_servicebook_v1';
-let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true}, vehicles:[], history:[] };
+let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'}, vehicles:[], history:[] };
 let editId=null;
+
 function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); renderAll(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
@@ -259,6 +295,8 @@ const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 const kmClass=(n)=> n<=0?'bad':(n<=1000?'warn':'ok');
+const dayOfYear=(date,year)=>{ const d=new Date(date); const y=year||d.getFullYear(); const start=new Date(y,0,1); const t=new Date(d); t.setFullYear(y); return Math.floor((t-start)/86400000)+1; };
+const isLeap=(y)=> (new Date(y,1,29).getMonth()===1);
 
 /* business */
 function tasksForVehicle(v){
@@ -273,12 +311,8 @@ function tasksForVehicle(v){
 
   const o=Number(v.odometer||0);
   const kmTask=(label,lastKm,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
-  kmTask('Смяна масло',  o, v.oilKm);
-  kmTask('Маслен филтър',o, v.ofKm);
-  kmTask('Горивен филтър',o, v.ffKm);
-  kmTask('Въздушен филтър',o, v.airKm);
-  kmTask('Накладки',o, v.padsKm);
-  kmTask('Ангренажен ремък (км)',o, v.beltKm);
+  kmTask('Смяна масло',o,v.oilKm); kmTask('Маслен филтър',o,v.ofKm); kmTask('Горивен филтър',o,v.ffKm);
+  kmTask('Въздушен филтър',o,v.airKm); kmTask('Накладки',o,v.padsKm); kmTask('Ангренажен ремък (км)',o,v.beltKm);
   if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
   return out;
 }
@@ -289,16 +323,21 @@ function allTasks(){
   return arr;
 }
 
-/* render */
-function iconDot(type){
-  if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'dot-go';
-  if(type.startsWith('ГТП')) return 'dot-gtp';
-  if(type.startsWith('Винетка')) return 'dot-vin';
-  if(type.includes('масло')) return 'dot-oil';
-  if(type.includes('филтър')) return 'dot-filter';
-  if(type.includes('Накладки')) return 'dot-brake';
-  if(type.includes('Ангренажен')) return 'dot-belt';
-  return 'dot-go';
+/* render top "today" */
+function renderToday(){
+  const now = new Date();
+  document.getElementById('todayBox').textContent = 'Днес: ' + now.toLocaleDateString('bg-BG');
+}
+
+/* render dashboard */
+function iconId(type){
+  if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'i-go';
+  if(type.startsWith('ГТП')) return 'i-gtp';
+  if(type.startsWith('Винетка')) return 'i-vin';
+  if(type.includes('масло')) return 'i-oil';
+  if(type.includes('филтър')) return 'i-filter';
+  if(type.includes('Ангренажен')) return 'i-belt';
+  return 'i-go';
 }
 function renderDashboard(){
   const L=document.getElementById('todoList');
@@ -309,7 +348,7 @@ function renderDashboard(){
       const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
       return `<div class="item">
         <div>
-          <div class="item-title"><span class="dot ${iconDot(t.type)}"></span>${t.type}</div>
+          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
           <div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div>
         </div>
         <div class="badge ${cls}">${value}</div>
@@ -318,7 +357,7 @@ function renderDashboard(){
       const left=t.kmLeft, cls=kmClass(left), value=(left<=0?'проср.':left+' км');
       return `<div class="item">
         <div>
-          <div class="item-title"><span class="dot ${iconDot(t.type)}"></span>${t.type}</div>
+          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
           <div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div>
         </div>
         <div class="badge ${cls}">${value}</div>
@@ -326,6 +365,8 @@ function renderDashboard(){
     }
   }).join('');
 }
+
+/* render vehicles / history */
 function renderVehicles(){
   const L=document.getElementById('vehicleList');
   if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
@@ -349,9 +390,113 @@ function renderHistory(){
     <div class="item-sub">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
   </div>`).join('');
 }
-function renderAll(){ renderDashboard(); renderVehicles(); renderHistory(); }
 
-/* crud */
+/* ===== Timeline ===== */
+function timelineYearValue(){
+  const sel = db.cfg.timelineYear;
+  if(sel==='current') return new Date().getFullYear();
+  return Number(sel)||new Date().getFullYear();
+}
+function tasksWithDates(){
+  return allTasks().filter(t=> !!t.date);
+}
+function renderTimeline(){
+  const year = timelineYearValue();
+  document.getElementById('tlYearLabel').textContent = year;
+  const svg = document.getElementById('timeline');
+  const width = svg.clientWidth || svg.parentElement.clientWidth;
+  const height = svg.clientHeight || 160;
+  const pad = 30; const lineY = Math.floor(height/2)+10;
+  const days = isLeap(year)?366:365;
+
+  // build SVG
+  const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML='';
+
+  // baseline
+  const line = document.createElementNS(ns,'line');
+  line.setAttribute('x1', pad); line.setAttribute('x2', width-pad);
+  line.setAttribute('y1', lineY); line.setAttribute('y2', lineY);
+  line.setAttribute('class','tl-line');
+  line.setAttribute('stroke','currentColor'); line.style.strokeOpacity = (getComputedStyle(document.documentElement).getPropertyValue('--muted')) ? 0.3 : 0.3;
+  svg.appendChild(line);
+
+  // month ticks
+  for(let m=0;m<12;m++){
+    const d = new Date(year, m, 1);
+    const day = dayOfYear(d,year);
+    const x = pad + (day-1)*(width-2*pad)/days;
+    const tick = document.createElementNS(ns,'line');
+    tick.setAttribute('x1',x); tick.setAttribute('x2',x);
+    tick.setAttribute('y1', lineY-6); tick.setAttribute('y2', lineY+6);
+    tick.setAttribute('stroke','#cfe0ff'); tick.setAttribute('stroke-width','1');
+    svg.appendChild(tick);
+
+    const lbl = document.createElementNS(ns,'text');
+    lbl.setAttribute('x',x+2); lbl.setAttribute('y', lineY-10);
+    lbl.setAttribute('class','tl-label');
+    lbl.textContent = d.toLocaleString('bg-BG',{month:'short'});
+    svg.appendChild(lbl);
+  }
+
+  // today marker (само ако годината е текуща)
+  const now = new Date();
+  if(year===now.getFullYear()){
+    const dx = pad + (dayOfYear(now,year)-1)*(width-2*pad)/days;
+    const tline = document.createElementNS(ns,'line');
+    tline.setAttribute('x1',dx); tline.setAttribute('x2',dx);
+    tline.setAttribute('y1', lineY-45); tline.setAttribute('y2', lineY+45);
+    tline.setAttribute('class','tl-today');
+    tline.setAttribute('stroke','#5ba7ff');
+    svg.appendChild(tline);
+
+    const ttxt = document.createElementNS(ns,'text');
+    ttxt.setAttribute('x',dx+4); ttxt.setAttribute('y', lineY-50);
+    ttxt.setAttribute('class','tl-label');
+    ttxt.textContent='днес';
+    svg.appendChild(ttxt);
+  }
+
+  // events
+  const events = tasksWithDates();
+  // разнеси етикетите (редуват се над/под)
+  events.forEach((ev,i)=>{
+    const d = new Date(ev.date); d.setFullYear(year); // нормализирай в тази година
+    const dd = dayOfYear(d,year);
+    const x = pad + (dd-1)*(width-2*pad)/days;
+    const y = lineY + (i%2===0? -24 : 24);
+
+    const dot = document.createElementNS(ns,'circle');
+    dot.setAttribute('cx',x); dot.setAttribute('cy',lineY);
+    dot.setAttribute('class','tl-dot');
+    let color = '#28c76f'; // ok
+    const left = daysLeft(ev.date);
+    if(left<=0) color = '#ff6b6b'; else if(left<=30) color = '#f9a826';
+    dot.setAttribute('fill', color);
+    svg.appendChild(dot);
+
+    // label background
+    const rect = document.createElementNS(ns,'rect');
+    const text = document.createElementNS(ns,'text');
+    const label = `${ev.type} • ${ev.veh||'МПС'} • ${fmt(ev.date)}`;
+    text.textContent = label;
+    text.setAttribute('x', x+8); text.setAttribute('y', y);
+    text.setAttribute('class','tl-label');
+    svg.appendChild(text);
+    // crude bbox estimate (no getBBox until in DOM): use text length
+    const w = 7.2*label.length; const h = 18;
+    rect.setAttribute('x', x+6); rect.setAttribute('y', y-14);
+    rect.setAttribute('rx','8'); rect.setAttribute('ry','8');
+    rect.setAttribute('width', w); rect.setAttribute('height', h);
+    rect.setAttribute('fill', 'white');
+    rect.setAttribute('stroke', '#e3e9fb');
+    rect.setAttribute('opacity','0.85');
+    // ensure rect behind text
+    svg.insertBefore(rect, text);
+  });
+}
+
+/* ===== CRUD / ICS (същото като преди) ===== */
 function openVehicleEditor(){ editId=null; editorTitle.textContent='Ново МПС';
   ['e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_oil_km','e_oil_mo','e_of_km','e_ff_km','e_cabin_mo','e_air_km','e_pads_km','e_belt_km','e_belt_yr'].forEach(id=>{
     const el=document.getElementById(id); if(el.tagName==='SELECT') el.selectedIndex=0; else el.value='';
@@ -415,17 +560,40 @@ function exportAllICS(){
 }
 
 /* settings */
-function applyCfgUI(){ cfg_hour.value=db.cfg.hour||'09:00'; cfg_d30.checked=!!db.cfg.d30; cfg_d10.checked=!!db.cfg.d10; cfg_d5.checked=!!db.cfg.d5; cfg_d1.checked=!!db.cfg.d1; }
-;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1'].forEach(id=>{
-  document.getElementById(id).addEventListener('change',()=>{ db.cfg.hour=cfg_hour.value; db.cfg.d30=cfg_d30.checked; db.cfg.d10=cfg_d10.checked; db.cfg.d5=cfg_d5.checked; db.cfg.d1=cfg_d1.checked; save(); });
+function applyCfgUI(){
+  cfg_hour.value=db.cfg.hour||'09:00'; cfg_d30.checked=!!db.cfg.d30; cfg_d10.checked=!!db.cfg.d10; cfg_d5.checked=!!db.cfg.d5; cfg_d1.checked=!!db.cfg.d1;
+  // timeline year options
+  const nowY = new Date().getFullYear();
+  const opts = ['current', nowY-1, nowY, nowY+1, nowY+2];
+  cfg_timeline_year.innerHTML = opts.map(v=>`<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`).join('');
+}
+;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1','cfg_timeline_year'].forEach(id=>{
+  document.addEventListener('change', (e)=> {
+    if(e.target && e.target.id===id){
+      db.cfg.hour=cfg_hour.value; db.cfg.d30=cfg_d30.checked; db.cfg.d10=cfg_d10.checked; db.cfg.d5=cfg_d5.checked; db.cfg.d1=cfg_d1.checked;
+      db.cfg.timelineYear = cfg_timeline_year.value;
+      save(); renderTimeline();
+    }
+  });
 });
 
 /* nav */
 document.querySelectorAll('.nav .btn').forEach(b=>{
   b.addEventListener('click', ()=>{
     const tab=b.dataset.tab;
-    ['dashboard','vehicles','history','settings'].forEach(t=>{ document.getElementById('tab-'+t).style.display=(t===tab?'block':'none'); });
+    ['dashboard','vehicles','history','settings'].forEach(t=>{ document.getElementById('tab-'+t)?.style && (document.getElementById('tab-'+t).style.display=(t===tab?'block':'none')); });
   });
+});
+
+/* theme toggle */
+function applyTheme(){
+  const mode = localStorage.getItem('theme') || 'light';
+  document.documentElement.classList.toggle('dark', mode==='dark');
+  document.getElementById('themeBtn').innerHTML = (mode==='dark'?'Светло':'Тъмно');
+}
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  const mode = (localStorage.getItem('theme') || 'light') === 'light' ? 'dark' : 'light';
+  localStorage.setItem('theme', mode); applyTheme();
 });
 
 /* pwa install */
@@ -435,7 +603,10 @@ if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredProm
 
 /* boot */
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error)); }
+applyTheme();
+renderToday();
 load();
+window.addEventListener('resize', ()=> renderTimeline()); // responsive timeline
 </script>
 </body>
 </html>
