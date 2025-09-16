@@ -150,14 +150,22 @@
 
     /* емблеми */
     .brandmark{
-     .brandlogo{
-  width:34px; height:34px; object-fit:contain;
-  border-radius:50%; background:linear-gradient(135deg,#eef4ff,#ffffff);
-  border:1px solid var(--border); box-shadow:var(--shadow);
-}
-.brandlogo.big{ width:72px; height:72px; position:absolute; right:14px; top:14px; opacity:.9 }
-
+      width:34px; height:34px; border-radius:50%;
+      background:linear-gradient(135deg, #e7f1ff, #ffffff);
+      border:1px solid var(--border);
+      color:var(--brand); display:flex; align-items:center; justify-content:center; font-weight:800;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
     }
+    .brandlogo{
+      width:34px; height:34px; object-fit:contain;
+      border-radius:50%;
+      background:linear-gradient(135deg,#eef4ff,#ffffff);
+      border:1px solid var(--border); box-shadow:var(--shadow);
+    }
+    .brandlogo.big{ width:72px; height:72px; position:absolute; right:14px; top:14px; opacity:.9 }
+
     .brandmark-big{
       position:absolute; right:14px; top:14px;
       width:72px; height:72px; border-radius:50%;
@@ -167,6 +175,7 @@
       font-weight:800; font-size:22px; letter-spacing:.5px;
       opacity:.35; pointer-events:none; user-select:none;
       box-shadow: var(--shadow);
+      overflow:hidden;
     }
     .card.logo-wrap{ position:relative; overflow:hidden; }
   </style>
@@ -337,32 +346,6 @@ let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear
 let editId=null;
 const $ = (id) => document.getElementById(id);
 
-/* make/model dictionary */
-const MAKES = {
-  'Volkswagen':['Golf','Passat','Tiguan','Polo','Touareg'],
-  'BMW':['3 Series','5 Series','X3','X5','1 Series'],
-  'Mercedes-Benz':['C-Class','E-Class','GLC','A-Class','GLE'],
-  'Audi':['A3','A4','A6','Q3','Q5'],
-  'Toyota':['Corolla','Camry','RAV4','Yaris','Auris'],
-  'Honda':['Civic','Accord','CR-V','Jazz'],
-  'Ford':['Focus','Mondeo','Kuga','Fiesta'],
-  'Opel':['Astra','Insignia','Corsa','Zafira'],
-  'Škoda':['Octavia','Superb','Fabia','Kodiaq'],
-  'Renault':['Megane','Clio','Captur','Laguna'],
-  'Peugeot':['308','3008','508','208'],
-  'Citroën':['C3','C4','C5 Aircross'],
-  'Nissan':['Qashqai','X-Trail','Micra'],
-  'Hyundai':['i30','Tucson','i20','Santa Fe'],
-  'Kia':['Ceed','Sportage','Rio'],
-  'Mazda':['3','6','CX-5','CX-3'],
-  'Друго':['(свободен модел)']
-};
-const MAKE_LIST = Object.keys(MAKES);
-
-/* storage */
-function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
-function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
-
 /* helpers */
 const addMonths=(d,m)=>{ const x=new Date(d); x.setMonth(x.getMonth()+m); return x; };
 const addYears=(d,y)=>{ const x=new Date(d); x.setFullYear(x.getFullYear()+y); return x; };
@@ -370,17 +353,15 @@ const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 function brandInitials(make){ return (make||'').split(/[ -]/).map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
+
+/* слъг + лого с fallback SVG→PNG→инициали */
 function slug(str){
   return (str||'')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')   // маха диакритика (Škoda -> Skoda)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g,'-')                        // всичко друго -> тире
-    .replace(/^-+|-+$/g,'');                           // чисти тирета в края
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 }
-
-// Първо пробва SVG, после PNG; ако и двете липсват — маха <img> и оставя инициалите:
 function logoImgHTML(make, cls=''){
-  const s = slug(make);
+  const s = slug(make||'');
   const svg = `logos/${s}.svg`;
   const png = `logos/${s}.png`;
   return `<img class="brandlogo ${cls}" src="${svg}" alt="${make}"
@@ -391,7 +372,7 @@ function logoImgHTML(make, cls=''){
     ">`;
 }
 
-// Зареждаме каталога с марки/модели от data/makes.json
+/* каталожни данни (зареждане от data/makes.json) */
 let MAKES = {};
 let MAKE_LIST = [];
 async function loadMakes(){
@@ -509,21 +490,28 @@ function renderVehicles(){
   if(!db.vehicles.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма добавени МПС.</div>'; return; }
   L.innerHTML = db.vehicles.map(v=>`
     <div class="item logo-wrap" style="grid-template-columns:34px 1fr auto">
-  <div class="brandmark" style="position:relative">
-    ${logoImgHTML(v.make||'')}
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-      ${brandInitials(v.make||'')}
-    </div>
-  </div>
-  ...
-  <div class="brandmark-big">
-    ${logoImgHTML(v.make||'', 'big')}
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-      ${brandInitials(v.make||'')}
-    </div>
-  </div>
-</div>
-
+      <div class="brandmark">
+        ${logoImgHTML(v.make||'')}
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          ${brandInitials(v.make||'')}
+        </div>
+      </div>
+      <div class="text">
+        <div class="item-title">${[v.make,v.model].filter(Boolean).join(' ')||'МПС'} ${v.name?('<span class="small" style="color:var(--muted)">• '+v.name+'</span>'):''} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
+        <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
+      </div>
+      <div class="right">
+        <button class="btn secondary" onclick="editVehicle('${v.id}')">Редактирай</button>
+        <button class="btn secondary" onclick="downloadICS('${v.id}')">.ics</button>
+      </div>
+      <div class="brandmark-big">
+        ${logoImgHTML(v.make||'', 'big')}
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          ${brandInitials(v.make||'')}
+        </div>
+      </div>
+    </div>`).join('');
+}
 function renderHistory(){
   const L=$('historyList');
   if(!db.history.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Все още няма записи.</div>'; return; }
@@ -627,19 +615,31 @@ function renderSpark(){
 }
 
 /* CRUD / ICS */
-function fillMakeModel(){
+async function fillMakeModel(){
+  await loadMakes();
   $('e_make').innerHTML = MAKE_LIST.map(m=>`<option value="${m}">${m}</option>`).join('');
-  $('e_model').innerHTML = MAKES[MAKE_LIST[0]].map(x=>`<option value="${x}">${x}</option>`).join('');
+  $('e_model').innerHTML = (MAKES[MAKE_LIST[0]]||['(свободен модел)'])
+    .map(x=>`<option value="${x}">${x}</option>`).join('');
+
   $('e_make').addEventListener('change', ()=>{
-    const mk=$('e_make').value;
-    const models = MAKES[mk] || ['(свободен модел)'];
-    $('e_model').innerHTML = models.map(x=>`<option value="${x}">${x}</option>`).join('');
+    const mk = $('e_make').value;
+    $('e_model').innerHTML = (MAKES[mk]||['(свободен модел)'])
+      .map(x=>`<option value="${x}">${x}</option>`).join('');
     updateLogoPreview();
   });
+
+  updateLogoPreview();
 }
 function updateLogoPreview(){
   const mk = $('e_make')?.value || 'SK';
-  $('logoPreview').textContent = brandInitials(mk);
+  const el = $('logoPreview');
+  if(!el) return;
+  el.innerHTML = logoImgHTML(mk, 'big');
+  el.appendChild(document.createTextNode(''));
+  if(!el.querySelector('img')){
+    el.textContent = brandInitials(mk);
+  }
+  el.style.display = 'block';
 }
 function openVehicleEditor(){
   editId = null; $('editorTitle').textContent = 'Ново МПС';
@@ -770,15 +770,19 @@ if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredProm
 /* render all */
 function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
 
-/* SW v19 */
+/* SW v20 */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw-v20.js');
   });
 }
 
+/* boot */
+function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
+
 applyTheme();
-fillMakeModel();
+fillMakeModel();   // async, попълва марка/модел и логото в редактора
 load();
 renderAll();
 updateWeather();
