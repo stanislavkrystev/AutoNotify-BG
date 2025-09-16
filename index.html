@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AutoNotify BG — Сервизна книжка</title>
+  <title>SK-carsinfo-BG — Сервизна книжка</title>
   <meta name="theme-color" content="#f3f6ff" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
@@ -11,6 +11,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* голяма емблема (инициали) */
+.brandmark-big{
+  position:absolute; right:14px; top:14px;
+  width:72px; height:72px; border-radius:50%;
+  background:linear-gradient(135deg,#eef4ff,#ffffff);
+  border:1px solid var(--border);
+  color:var(--brand); display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:22px; letter-spacing:.5px;
+  opacity:.35; pointer-events:none; user-select:none;
+  box-shadow: var(--shadow);
+}
+
+/* контейнери, които държат голяма емблема като воден знак */
+.card.logo-wrap{ position:relative; overflow:hidden; }
+
     :root{
       --bg:#f3f6ff; --text:#1b2a38; --muted:#5d6b7a;
       --card: rgba(255,255,255,.85); --border:#e3e9fb;
@@ -153,7 +168,7 @@
 
 <div class="app">
   <div class="top">
-    <div class="brand">🚗 AutoNotify BG — Сервизна книжка</div>
+    <div class="brand">🚗 SK-carsinfo-BG — Сервизна книжка</div>
     <div class="nav">
       <button class="btn" data-tab="dashboard">Табло</button>
       <button class="btn" data-tab="vehicles">МПС</button>
@@ -241,8 +256,10 @@
   </section>
 
   <!-- EDITOR -->
+  <section id="editor" class="card logo-wrap" style="display:none">
   <section id="editor" class="card" style="display:none">
     <h3 id="editorTitle">МПС</h3>
+    <div id="logoPreview" class="brandmark-big">SK</div>
     <div class="row">
       <div class="col-3">
         <label>Марка</label>
@@ -518,7 +535,8 @@ function renderSpark(){
   wm.setAttribute('y', padT + (h - padT - padB)/2 + 16);
   wm.setAttribute('text-anchor','middle');
   wm.setAttribute('class','sp-wm');
-  wm.textContent='AutoNotify BG';
+  wm.textContent='SK-carsinfo-BG';
+
   svg.appendChild(wm);
 
   // ос X
@@ -565,6 +583,18 @@ function fillMakeModel(){
     $('e_model').innerHTML = models.map(x=>`<option value="${x}">${x}</option>`).join('');
   });
 }
+  function updateLogoPreview(){
+  const mk = $('e_make')?.value || '';
+  $('logoPreview').textContent = brandInitials(mk || 'SK');
+}
+
+// при смяна на марка/модел да обнови превюто
+['e_make','e_model'].forEach(id=>{
+  document.addEventListener('change', (e)=>{
+    if(e.target && e.target.id===id) updateLogoPreview();
+  });
+});
+
 function openVehicleEditor(){
   editId = null; $('editorTitle').textContent = 'Ново МПС';
   ['e_make','e_model','e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_cabin_mo','e_pads_km','e_belt_km','e_belt_yr']
@@ -572,6 +602,9 @@ function openVehicleEditor(){
   $('delBtn').style.display = 'none';
   $('editor').style.display = 'block';
 }
+  $('delBtn').style.display = 'none';
+$('editor').style.display = 'block';
+updateLogoPreview();
 function closeVehicleEditor(){ $('editor').style.display='none'; }
 function editVehicle(id){
   const v=db.vehicles.find(x=>x.id===id); if(!v) return;
@@ -590,6 +623,10 @@ function editVehicle(id){
   $('e_belt_yr').value=v.beltYr||'';
   $('delBtn').style.display='inline-flex'; $('editor').style.display='block';
 }
+  $('delBtn').style.display='inline-flex';
+$('editor').style.display='block';
+updateLogoPreview();
+
 function saveVehicle(){
   const v={
     id: editId || Math.random().toString(36).slice(2),
@@ -697,7 +734,7 @@ function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); render
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw-v17.js'); // новият файл
+    navigator.serviceWorker.register('sw-v18.js'); // новият файл
   });
 }
 
