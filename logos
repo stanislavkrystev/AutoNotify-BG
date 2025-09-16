@@ -1,1 +1,11 @@
-honda.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#eef4ff"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#g)" stroke="#dce6ff"/>
+  <text x="32" y="40" text-anchor="middle" font-family="Nunito, Arial" font-size="28" font-weight="700" fill="#2d4c7a">H</text>
+</svg>
+
