@@ -150,11 +150,13 @@
 
     /* емблеми */
     .brandmark{
-      width:34px; height:34px; border-radius:50%;
-      background:linear-gradient(135deg, #e7f1ff, #ffffff);
-      border:1px solid var(--border);
-      color:var(--brand); display:flex; align-items:center; justify-content:center; font-weight:800;
-      box-shadow: var(--shadow);
+     .brandlogo{
+  width:34px; height:34px; object-fit:contain;
+  border-radius:50%; background:linear-gradient(135deg,#eef4ff,#ffffff);
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.brandlogo.big{ width:72px; height:72px; position:absolute; right:14px; top:14px; opacity:.9 }
+
     }
     .brandmark-big{
       position:absolute; right:14px; top:14px;
@@ -368,6 +370,41 @@ const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
 function brandInitials(make){ return (make||'').split(/[ -]/).map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
+function slug(str){
+  return (str||'')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')   // маха диакритика (Škoda -> Skoda)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-')                        // всичко друго -> тире
+    .replace(/^-+|-+$/g,'');                           // чисти тирета в края
+}
+
+// Първо пробва SVG, после PNG; ако и двете липсват — маха <img> и оставя инициалите:
+function logoImgHTML(make, cls=''){
+  const s = slug(make);
+  const svg = `logos/${s}.svg`;
+  const png = `logos/${s}.png`;
+  return `<img class="brandlogo ${cls}" src="${svg}" alt="${make}"
+    onerror="
+      this.onerror=null;
+      this.src='${png}';
+      this.onerror=function(){ this.remove(); };
+    ">`;
+}
+
+// Зареждаме каталога с марки/модели от data/makes.json
+let MAKES = {};
+let MAKE_LIST = [];
+async function loadMakes(){
+  try{
+    const res = await fetch('data/makes.json');
+    MAKES = await res.json();
+    MAKE_LIST = Object.keys(MAKES);
+  }catch(e){
+    console.warn('makes.json не е наличен — fallback', e);
+    MAKES = {"Друго":["(свободен модел)"]};
+    MAKE_LIST = Object.keys(MAKES);
+  }
+}
 
 /* business */
 function tasksForVehicle(v){
@@ -472,18 +509,21 @@ function renderVehicles(){
   if(!db.vehicles.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма добавени МПС.</div>'; return; }
   L.innerHTML = db.vehicles.map(v=>`
     <div class="item logo-wrap" style="grid-template-columns:34px 1fr auto">
-      <div class="brandmark">${brandInitials(v.make||'')}</div>
-      <div class="text">
-        <div class="item-title">${[v.make,v.model].filter(Boolean).join(' ')||'МПС'} ${v.name?('<span class="small" style="color:var(--muted)">• '+v.name+'</span>'):''} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
-        <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
-      </div>
-      <div class="right">
-        <button class="btn secondary" onclick="editVehicle('${v.id}')">Редактирай</button>
-        <button class="btn secondary" onclick="downloadICS('${v.id}')">.ics</button>
-      </div>
-      <div class="brandmark-big">${brandInitials(v.make||'')}</div>
-    </div>`).join('');
-}
+  <div class="brandmark" style="position:relative">
+    ${logoImgHTML(v.make||'')}
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+      ${brandInitials(v.make||'')}
+    </div>
+  </div>
+  ...
+  <div class="brandmark-big">
+    ${logoImgHTML(v.make||'', 'big')}
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+      ${brandInitials(v.make||'')}
+    </div>
+  </div>
+</div>
+
 function renderHistory(){
   const L=$('historyList');
   if(!db.history.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Все още няма записи.</div>'; return; }
