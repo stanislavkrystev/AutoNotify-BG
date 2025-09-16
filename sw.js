@@ -1,5 +1,5 @@
 // sw-v17.js — надежден SW с автоматичен ъпдейт и правилно кеширане
-const CACHE = 'autonotify-v18'
+const CACHE = 'autonotify-v19'
 const CORE = [
   './',
   './index.html',
