@@ -63,36 +63,35 @@
     }
 
     .app{max-width:1180px; margin:0 auto; padding:18px}
-    .top/* ---- layout на горната лента ---- */
-.top{
-  display:grid; 
-  grid-template-columns: 1fr auto;           /* ляво: заглавие + бутони, дясно: време/дата */
-  grid-template-areas:
-    "brand  wx"
-    "nav    wx";
-  gap:10px;
-  align-items:start;
-  margin-bottom:10px;
-}
-.brand{ grid-area: brand; font-weight:800; font-size:18px; line-height:1.1 }
-.nav{ grid-area: nav; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start }
-.today{ grid-area: wx; display:flex; flex-direction:column; align-items:flex-end; gap:6px }
 
-/* време – правоъгълен чип, един ред */
-.wx{
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; border:1px solid var(--border); border-radius:12px;
-  background:#ffffffcc; box-shadow: var(--shadow); 
-  font-size:16px; white-space:nowrap;         /* ! не се пренася */
-}
-#todayText{ white-space:nowrap; color:var(--muted); font-weight:600 }
+    /* ---- layout на горната лента ---- */
+    .top{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "brand  wx"
+        "nav    wx";
+      gap:10px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+    .brand{ grid-area: brand; font-weight:800; font-size:18px; line-height:1.1 }
+    .nav{ grid-area: nav; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start }
+    .today{ grid-area: wx; display:flex; flex-direction:column; align-items:flex-end; gap:6px }
 
-/* на съвсем тесни екрани */
-@media (max-width: 520px){
-  .brand{ font-size:16px }
-  .wx{ font-size:15px }
-}
+    /* време – правоъгълен чип, един ред */
+    .wx{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border:1px solid var(--border); border-radius:12px;
+      background:#ffffffcc; box-shadow: var(--shadow);
+      font-size:16px; white-space:nowrap;
+    }
+    #todayText{ white-space:nowrap; color:var(--muted); font-weight:600 }
 
+    @media (max-width: 520px){
+      .brand{ font-size:16px }
+      .wx{ font-size:15px }
+    }
 
     .btn{
       padding:10px 14px; border-radius:999px;
@@ -145,16 +144,12 @@
     a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
     /* sparkline + воден знак */
-    // воден знак (адаптивен размер, за да не „излиза“)
-const wm=document.createElementNS(ns,'text');
-wm.setAttribute('x', w/2);
-wm.setAttribute('y', padT + (h - padT - padB)/2 + 12);
-wm.setAttribute('text-anchor','middle');
-wm.setAttribute('class','sp-wm');
-const fs = Math.max(22, Math.min(56, 0.12 * w)); // 22..56px
-wm.setAttribute('style', `font-size:${fs}px`);
-wm.textContent='SK-carsinfo-BG';
-svg.appendChild(wm);
+    .spark{ width:100%; height:180px; overflow:visible; }
+    .sp-axis{ stroke:#dfe6ff; stroke-width:1; }
+    .sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
+    .sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
+    .tl-label{ font-size:11px; fill:var(--muted); }
+    .sp-wm{ fill:var(--muted); opacity:.08; font-weight:800; font-size:56px; pointer-events:none; }
 
     /* емблеми */
     .brandmark{
@@ -190,29 +185,11 @@ svg.appendChild(wm);
 </svg>
 
 <div class="app">
- <div class="top">
-  <div class="brand">🚗 SK-carsinfo-BG — Сервизна книжка</div>
 
-  <div class="nav">
-    <button class="btn" data-tab="dashboard">Табло</button>
-    <button class="btn" data-tab="vehicles">МПС</button>
-    <button class="btn" data-tab="history">История</button>
-    <button class="btn secondary" data-tab="settings">Настройки</button>
-    <button class="btn secondary" id="themeBtn">Тъмно</button>
-    <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
-  </div>
-
-  <div class="today">
-    <div class="wx" id="wxBox">
-      <span id="wxNow">—°</span>
-      <small id="wxNext">/ утре —°</small>
-      <input id="wxCity" placeholder="Въведи град" style="display:none"/>
-    </div>
-    <div id="todayText">Днес: <span id="todayDate">—</span></div>
-  </div>
-</div>
-
+  <!-- HEADER -->
+  <div class="top">
     <div class="brand">🚗 SK-carsinfo-BG — Сервизна книжка</div>
+
     <div class="nav">
       <button class="btn" data-tab="dashboard">Табло</button>
       <button class="btn" data-tab="vehicles">МПС</button>
@@ -221,11 +198,14 @@ svg.appendChild(wm);
       <button class="btn secondary" id="themeBtn">Тъмно</button>
       <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
     </div>
-    <div class="today" id="todayBox">
+
+    <div class="today">
       <div class="wx" id="wxBox">
-        <span id="wxNow">—°</span> <small id="wxNext">/ утре —°</small>
+        <span id="wxNow">—°</span>
+        <small id="wxNext">/ утре —°</small>
         <input id="wxCity" placeholder="Въведи град" style="display:none"/>
       </div>
+      <div id="todayText">Днес: <span id="todayDate">—</span></div>
     </div>
   </div>
 
@@ -429,9 +409,7 @@ function allTasks(){
 function renderToday(){
   const d = new Date().toLocaleDateString('bg-BG');
   const el = document.getElementById('todayDate');
-  if(el) el.textContent = d + ' г.';   // ако не искаш „г.“, махни го
-}
-
+  if(el) el.textContent = d + ' г.';
 }
 async function updateWeather(){
   try{
@@ -564,62 +542,46 @@ function renderSpark(){
 
   const values = monthlyBuckets(year);
   const maxVal = Math.max(1, ...values);
-  const stepX  = (w - padL - padR) / 12;        // 12 равни клетки
-const pts = values.map((v,i)=>{
-  const x = padL + (i + 0.5) * stepX;         // център на клетката
-  const y = padT + (h - padT - padB) * (1 - v/maxVal);
-  return {x,y};
-});
 
-// ... по-надолу, където рисуваме скалата/етикетите:
-for(let m=0;m<12;m++){
-  const x = padL + (m + 0.5) * stepX;
-  const tick=document.createElementNS(ns,'line');
-  tick.setAttribute('x1',x); tick.setAttribute('x2',x);
-  tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6);
-  tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
-
-  const lbl=document.createElementNS(ns,'text');
-  lbl.setAttribute('x', x); lbl.setAttribute('y', h-10);
-  lbl.setAttribute('class','tl-label');
-  lbl.setAttribute('text-anchor', 'middle');
-  lbl.textContent = String(m+1).padStart(2,'0');     // 01..12 (няма „112“)
-  svg.appendChild(lbl);
-}
-
+  const stepX  = (w - padL - padR) / 12;                 // 12 равни клетки
+  const pts = values.map((v,i)=>{
+    const x = padL + (i + 0.5) * stepX;                  // център
+    const y = padT + (h - padT - padB) * (1 - v/maxVal);
+    return {x,y};
+  });
 
   const ns='http://www.w3.org/2000/svg';
   svg.innerHTML='';
 
-  // воден знак
+  // воден знак (адаптивен размер)
   const wm=document.createElementNS(ns,'text');
   wm.setAttribute('x', w/2);
-  wm.setAttribute('y', padT + (h - padT - padB)/2 + 18);
+  wm.setAttribute('y', padT + (h - padT - padB)/2 + 12);
   wm.setAttribute('text-anchor','middle');
   wm.setAttribute('class','sp-wm');
+  const fs = Math.max(22, Math.min(56, 0.12 * w)); // 22..56px
+  wm.setAttribute('style', `font-size:${fs}px`);
   wm.textContent='SK-carsinfo-BG';
   svg.appendChild(wm);
 
-  // ос X
+  // ос X + етикети 01..12
   const axis=document.createElementNS(ns,'line');
   axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR);
   axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB);
   axis.setAttribute('class','sp-axis'); svg.appendChild(axis);
 
   for(let m=0;m<12;m++){
-    const x=padL+m*stepX;
+    const x=padL + (m + 0.5) * stepX;
     const tick=document.createElementNS(ns,'line');
     tick.setAttribute('x1',x); tick.setAttribute('x2',x);
     tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6);
     tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
 
     const lbl=document.createElementNS(ns,'text');
-    let lx=x+2, anchor='start';
-    if(m===11){ lx = w - padR - 2; anchor='end'; }
-    lbl.setAttribute('x', lx); lbl.setAttribute('y', h-10);
+    lbl.setAttribute('x', x); lbl.setAttribute('y', h-10);
     lbl.setAttribute('class','tl-label');
-    lbl.setAttribute('text-anchor', anchor);
-    lbl.textContent = new Date(2000,m,1).toLocaleString('bg-BG',{month:'short'});
+    lbl.setAttribute('text-anchor', 'middle');
+    lbl.textContent = String(m+1).padStart(2,'0');   // 01..12 (без 112)
     svg.appendChild(lbl);
   }
 
@@ -777,11 +739,10 @@ if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredProm
 /* render all */
 function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
 
-/* boot */
+/* boot – bump SW v19 */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw-v19.js');
- // новият SW файл/версия
+    navigator.serviceWorker.register('sw-v19.js'); // нов SW файл
   });
 }
 
