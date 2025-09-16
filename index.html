@@ -11,6 +11,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* Подравняване на редовете с икони – стабилно в Android */
+.item{
+  display: grid;
+  grid-template-columns: 28px 1fr auto; /* икона | текст | бадж */
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #ffffffc4;
+  box-shadow: var(--shadow);
+}
+
+/* Клетка за иконата – фиксиран размер, центриране */
+.item .ico{
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Самата SVG икона – блок, без baseline трикове */
+.icon{
+  width: 20px; height: 20px;
+  display: block;
+  margin: 0; /* махаме старите марджини */
+  vertical-align: middle; /* безопасно */
+}
+
+/* Колона с текст */
+.item .text .item-title{ font-weight: 700; line-height: 1.2; }
+.item .text .item-sub{ font-size: 12px; color: var(--muted); line-height: 1.2; }
+
+/* Забраняваме Android auto-text resize, което често размества нещата */
+html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
     :root{
       --bg:#f3f6ff; --text:#1b2a38; --muted:#5d6b7a;
       --card: rgba(255,255,255,.85); --border:#e3e9fb;
