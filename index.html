@@ -11,40 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Подравняване на редовете с икони – стабилно в Android */
-.item{
-  display: grid;
-  grid-template-columns: 28px 1fr auto; /* икона | текст | бадж */
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #ffffffc4;
-  box-shadow: var(--shadow);
-}
-
-/* Клетка за иконата – фиксиран размер, центриране */
-.item .ico{
-  width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* Самата SVG икона – блок, без baseline трикове */
-.icon{
-  width: 20px; height: 20px;
-  display: block;
-  margin: 0; /* махаме старите марджини */
-  vertical-align: middle; /* безопасно */
-}
-
-/* Колона с текст */
-.item .text .item-title{ font-weight: 700; line-height: 1.2; }
-.item .text .item-sub{ font-size: 12px; color: var(--muted); line-height: 1.2; }
-
-/* Забраняваме Android auto-text resize, което често размества нещата */
-html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
     :root{
       --bg:#f3f6ff; --text:#1b2a38; --muted:#5d6b7a;
       --card: rgba(255,255,255,.85); --border:#e3e9fb;
@@ -52,6 +18,7 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       --accent:#5ba7ff; --accent-hover:#3f90f3;
       --ok:#28c76f; --warn:#f9a826; --bad:#ff6b6b;
       --r:14px; --pad:12px; --gap:10px;
+      --brand:#2d4c7a;
     }
     :root.dark{
       --bg:#0b1020; --text:#e8ecf1; --muted:#a8b3d1;
@@ -59,13 +26,8 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       --shadow: 0 10px 30px rgba(0,0,0,.28);
       --accent:#5ba7ff; --accent-hover:#3f90f3;
       --ok:#9BE7A3; --warn:#FFD166; --bad:#FF8B8B;
+      --brand:#b7c8e9;
     }
-
-    /* sparkline */
-    .spark{ width:100%; height:180px; }
-    .sp-axis{ stroke:#dfe6ff; stroke-width:1; }
-    .sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
-    .sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
 
     *{box-sizing:border-box}
     body{
@@ -104,7 +66,11 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px}
     .brand{font-weight:700}
     .nav{display:flex; gap:8px; flex-wrap:wrap}
-    .today{color:var(--muted); font-weight:600}
+    .today{color:var(--muted); font-weight:600; display:flex; align-items:center; gap:10px}
+
+    .wx{display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:#ffffffb8; box-shadow: var(--shadow); }
+    .wx small{color:var(--muted)}
+    .wx input{width:160px; padding:6px 10px; border-radius:999px; border:1px solid var(--border);}
 
     .btn{
       padding:10px 14px; border-radius:999px;
@@ -132,15 +98,18 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       box-shadow:0 1px 0 rgba(10,20,40,.02) inset;
     }
     input:focus,select:focus,textarea:focus{outline:none; border-color:#b9ccff; box-shadow:0 0 0 3px rgba(185,204,255,.35)}
+    html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
+    /* табло – стабилно подравняване */
     #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
     .item{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:12px 14px; border:1px solid var(--border); border-radius:16px; background:#ffffffc4;
-      box-shadow: var(--shadow);
+      display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:12px;
+      padding:12px 14px; border:1px solid var(--border); border-radius:16px; background:#ffffffc4; box-shadow: var(--shadow);
     }
-    .item-title{font-weight:700}
-    .item-sub{font-size:12px; color:var(--muted)}
+    .ico{ width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+    .icon{ width:20px; height:20px; display:block; margin:0; vertical-align:middle; }
+    .item-title{font-weight:700; line-height:1.2}
+    .item-sub{font-size:12px; color:var(--muted); line-height:1.2}
     .badge{
       min-width:98px; text-align:center; padding:8px 10px; border-radius:10px; font-weight:700;
       background:#eef5ff; border:1px solid #d7e6ff; color:#2d4c7a;
@@ -153,7 +122,22 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .watermark{opacity:.75; font-size:12px; color:var(--muted)}
     a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
 
-    .icon{width:18px; height:18px; vertical-align:-3px; margin-right:6px; opacity:.9}
+    /* sparkline + воден знак */
+    .spark{ width:100%; height:180px; overflow:visible; }
+    .sp-axis{ stroke:#dfe6ff; stroke-width:1; }
+    .sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
+    .sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
+    .tl-label{ font-size:11px; fill:var(--muted); }
+    .sp-wm{ fill:var(--muted); opacity:.08; font-weight:800; font-size:48px; pointer-events:none; }
+
+    /* емблема (инициали) за марка */
+    .brandmark{
+      width:34px; height:34px; border-radius:50%;
+      background:linear-gradient(135deg, #e7f1ff, #ffffff);
+      border:1px solid var(--border);
+      color:var(--brand); display:flex; align-items:center; justify-content:center; font-weight:800;
+      box-shadow: var(--shadow);
+    }
   </style>
 </head>
 <body>
@@ -162,9 +146,9 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   <symbol id="i-go" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm1 5v5.2l4 2.3-.8 1.4L11 14V7h2Z"/></symbol>
   <symbol id="i-gtp" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4h10l2 4v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8l2-4Zm0 4h10"/></symbol>
   <symbol id="i-vin" viewBox="0 0 24 24"><path fill="currentColor" d="M4 7h16v10H4z"/><path fill="currentColor" d="M6 5h12v2H6z"/></symbol>
-  <symbol id="i-oil" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2s4 5 4 7a4 4 0 1 1-8 0c0-2 4-7 4-7Z"/></symbol>
-  <symbol id="i-filter" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16v2l-6 5v5l-4-2v-3L4 7V5Z"/></symbol>
   <symbol id="i-belt" viewBox="0 0 24 24"><path fill="currentColor" d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm3 0a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z"/></symbol>
+  <symbol id="i-brake" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
+  <symbol id="i-cabin" viewBox="0 0 24 24"><path fill="currentColor" d="M4 7h16v10H4z"/><path fill="currentColor" d="M6 9h12v2H6zm0 4h12v2H6z"/></symbol>
 </svg>
 
 <div class="app">
@@ -178,7 +162,12 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       <button class="btn secondary" id="themeBtn">Тъмно</button>
       <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
     </div>
-    <div class="today" id="todayBox"></div>
+    <div class="today" id="todayBox">
+      <div class="wx" id="wxBox">
+        <span id="wxNow">—°</span> <small id="wxNext">/ утре —°</small>
+        <input id="wxCity" placeholder="Въведи град" style="display:none"/>
+      </div>
+    </div>
   </div>
 
   <!-- TABLO -->
@@ -188,7 +177,7 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     <div class="sep"></div>
     <div class="chips small">
       <div class="chip"><span class="ok">зелено</span> — всичко е наред</div>
-      <div class="chip"><span class="warn">жълто</span> — &lt; 30 дни или &lt; 1000 км</div>
+      <div class="chip"><span class="warn">жълто</span> — &lt; 30 дни</div>
       <div class="chip"><span class="bad">червено</span> — просрочено</div>
     </div>
   </section>
@@ -197,7 +186,7 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   <section class="card" id="spark-wrap">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <h3>Натоварване по месеци <span id="spYear"></span></h3>
-      <div class="small" style="color:var(--muted)">брой събития с конкретна дата за избраната година</div>
+      <div class="small" style="color:var(--muted)">събития с конкретна дата за избраната година</div>
     </div>
     <svg id="spark" class="spark"></svg>
   </section>
@@ -255,9 +244,18 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   <section id="editor" class="card" style="display:none">
     <h3 id="editorTitle">МПС</h3>
     <div class="row">
-      <div class="col-4"><label>Име/Рег. номер</label><input id="e_name" placeholder="напр. A1234BC или BMW 320d"/></div>
-      <div class="col-4"><label>Собственик (по избор)</label><input id="e_owner" placeholder="напр. Иван Петров"/></div>
-      <div class="col-4"><label>Текущ километраж</label><input id="e_odometer" type="number" min="0" step="1" placeholder="км"/></div>
+      <div class="col-3">
+        <label>Марка</label>
+        <select id="e_make"></select>
+      </div>
+      <div class="col-3">
+        <label>Модел</label>
+        <select id="e_model"></select>
+      </div>
+      <div class="col-3"><label>Рег. номер / Име</label><input id="e_name" placeholder="напр. A1234BC"/></div>
+      <div class="col-3"><label>Собственик (по избор)</label><input id="e_owner" placeholder="напр. Иван Петров"/></div>
+
+      <div class="col-3"><label>Текущ километраж</label><input id="e_odometer" type="number" min="0" step="1" placeholder="км"/></div>
 
       <div class="col-3"><label>ГО – начало</label><input id="e_go_start" type="date"/></div>
       <div class="col-3">
@@ -268,7 +266,7 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
           <option value="4">4 вноски (на 3 м.)</option>
         </select>
       </div>
-      <div class="col-3"><label>ГТП – дата на прегледа</label><input id="e_gtp" type="date"/></div>
+      <div class="col-3"><label>ГТП – дата</label><input id="e_gtp" type="date"/></div>
 
       <div class="col-3">
         <label>Винетка – тип</label>
@@ -280,12 +278,7 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       </div>
       <div class="col-3"><label>Винетка – начало</label><input id="e_vignette_start" type="date"/></div>
 
-      <div class="col-3"><label>Масло – интервал (км)</label><input id="e_oil_km" type="number" min="0" step="500" placeholder="напр. 10000"/></div>
-      <div class="col-3"><label>Масло – интервал (мес.)</label><input id="e_oil_mo" type="number" min="0" step="1" placeholder="напр. 12"/></div>
-      <div class="col-3"><label>Филтър маслен – интервал (км)</label><input id="e_of_km" type="number" min="0" step="500"/></div>
-      <div class="col-3"><label>Горивен филтър – интервал (км)</label><input id="e_ff_km" type="number" min="0" step="500"/></div>
       <div class="col-3"><label>Поленов/климатик – интервал (мес.)</label><input id="e_cabin_mo" type="number" min="0" step="1"/></div>
-      <div class="col-3"><label>Въздушен филтър – интервал (км)</label><input id="e_air_km" type="number" min="0" step="500"/></div>
       <div class="col-3"><label>Накладки – интервал (км)</label><input id="e_pads_km" type="number" min="0" step="500"/></div>
       <div class="col-3"><label>Ангренажен ремък – интервал (км)</label><input id="e_belt_km" type="number" min="0" step="1000"/></div>
       <div class="col-3"><label>Ангренажен ремък – интервал (год.)</label><input id="e_belt_yr" type="number" min="0" step="1"/></div>
@@ -305,39 +298,65 @@ html{ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 <script>
 /* ===== model & storage ===== */
-const KEY='autonotify_servicebook_v1';
-let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'}, vehicles:[], history:[] };
+const KEY='autonotify_servicebook_v2';
+let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'},
+           vehicles:[], history:[], wx:{city:'', lat:null, lon:null} };
 let editId=null;
 const $ = (id) => document.getElementById(id);
 
+/* make/model dictionary (кратък списък) */
+const MAKES = {
+  'Volkswagen':['Golf','Passat','Tiguan','Polo','Touareg'],
+  'BMW':['3 Series','5 Series','X3','X5','1 Series'],
+  'Mercedes-Benz':['C-Class','E-Class','GLC','A-Class','GLE'],
+  'Audi':['A3','A4','A6','Q3','Q5'],
+  'Toyota':['Corolla','Camry','RAV4','Yaris','Auris'],
+  'Honda':['Civic','Accord','CR-V','Jazz'],
+  'Ford':['Focus','Mondeo','Kuga','Fiesta'],
+  'Opel':['Astra','Insignia','Corsa','Zafira'],
+  'Škoda':['Octavia','Superb','Fabia','Kodiaq'],
+  'Renault':['Megane','Clio','Captur','Laguna'],
+  'Peugeot':['308','3008','508','208'],
+  'Citroën':['C3','C4','C5 Aircross'],
+  'Nissan':['Qashqai','X-Trail','Micra'],
+  'Hyundai':['i30','Tucson','i20','Santa Fe'],
+  'Kia':['Ceed','Sportage','Rio'],
+  'Mazda':['3','6','CX-5','CX-3'],
+  'Друго':['(свободен модел)']
+};
+const MAKE_LIST = Object.keys(MAKES);
+
+/* storage */
 function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
 /* helpers */
-const addDays=(d,n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x; };
 const addMonths=(d,m)=>{ const x=new Date(d); x.setMonth(x.getMonth()+m); return x; };
 const addYears=(d,y)=>{ const x=new Date(d); x.setFullYear(x.getFullYear()+y); return x; };
 const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
-const kmClass=(n)=> n<=0?'bad':(n<=1000?'warn':'ok');
+function brandInitials(make){ return (make||'').split(/[ -]/).map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
 
 /* business */
 function tasksForVehicle(v){
-  const out=[]; const today=new Date();
+  const out=[];
   if(v.goStart){
-    out.push({veh:v.name, type:'ГО изтича', date:addYears(v.goStart,1)});
+    out.push({veh:labelVeh(v), type:'ГО изтича', date:addYears(v.goStart,1)});
     const plan=Number(v.goPlan||1), inst=plan===1?[0]:(plan===2?[0,6]:[0,3,6,9]);
-    inst.forEach((m,i)=> out.push({veh:v.name, type:`ГО – вноска ${i+1}`, date:addMonths(v.goStart,m)}));
+    inst.forEach((m,i)=> out.push({veh:labelVeh(v), type:`ГО – вноска ${i+1}`, date:addMonths(v.goStart,m)}));
   }
-  if(v.gtp){ out.push({veh:v.name, type:'ГТП изтича', date:addYears(v.gtp,1)}); }
-  if(v.vigStart && v.vigType){ out.push({veh:v.name, type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
-  const o=Number(v.odometer||0);
-  const kmTask=(label,intervalKm)=>{ if(!intervalKm) return; const next=o+Number(intervalKm); out.push({veh:v.name,type:label,kmDue:next,kmLeft:next-o}); };
-  kmTask('Смяна масло',v.oilKm); kmTask('Маслен филтър',v.ofKm); kmTask('Горивен филтър',v.ffKm);
-  kmTask('Въздушен филтър',v.airKm); kmTask('Накладки',v.padsKm); kmTask('Ангренажен ремък (км)',v.beltKm);
-  if(v.beltYr){ out.push({veh:v.name, type:'Ангренажен ремък (г.)', date:addYears(v.beltStart||today, Number(v.beltYr))}); }
+  if(v.gtp){ out.push({veh:labelVeh(v), type:'ГТП изтича', date:addYears(v.gtp,1)}); }
+  if(v.vigStart && v.vigType){ out.push({veh:labelVeh(v), type:'Винетка изтича', date:addMonths(v.vigStart, Number(v.vigType))}); }
+  if(v.cabinMo){ out.push({veh:labelVeh(v), type:'Поленов/климатик', date:addMonths(new Date(), Number(v.cabinMo))}); }
+  if(v.padsKm && v.odometer) out.push({veh:labelVeh(v), type:'Накладки', kmDue:Number(v.odometer)+Number(v.padsKm), kmLeft:Number(v.padsKm)});
+  if(v.beltKm && v.odometer) out.push({veh:labelVeh(v), type:'Ангренажен ремък (км)', kmDue:Number(v.odometer)+Number(v.beltKm), kmLeft:Number(v.beltKm)});
+  if(v.beltYr) out.push({veh:labelVeh(v), type:'Ангренажен ремък (г.)', date:addYears(new Date(), Number(v.beltYr))});
   return out;
+}
+function labelVeh(v){
+  const mm = [v.make, v.model].filter(Boolean).join(' ');
+  return mm ? `${mm} (${v.name||'МПС'})` : (v.name||'МПС');
 }
 function allTasks(){
   let arr=[]; db.vehicles.forEach(v=> arr=arr.concat(tasksForVehicle(v)));
@@ -346,10 +365,36 @@ function allTasks(){
   return arr;
 }
 
-/* today */
+/* today + weather */
 function renderToday(){
   const now = new Date();
-  $('todayBox').textContent = 'Днес: ' + now.toLocaleDateString('bg-BG');
+  $('todayBox').firstChild && ($('todayBox').firstChild.textContent = 'Днес: ' + now.toLocaleDateString('bg-BG'));
+}
+async function updateWeather(){
+  try{
+    let lat=db.wx.lat, lon=db.wx.lon;
+    if(!lat || !lon){
+      // опит за геолокация
+      await new Promise((res)=>navigator.geolocation?.getCurrentPosition(p=>{ lat=p.coords.latitude; lon=p.coords.longitude; db.wx.lat=lat; db.wx.lon=lon; save(); res(); }, ()=>res(), {timeout:2000}));
+    }
+    if(!lat || !lon){
+      // показваме поле за град
+      $('wxCity').style.display='inline-block';
+      $('wxCity').addEventListener('change', async ()=>{
+        const city=$('wxCity').value.trim(); if(!city) return;
+        const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=bg&format=json`)).json();
+        if(g.results && g.results[0]){ db.wx.city=city; db.wx.lat=g.results[0].latitude; db.wx.lon=g.results[0].longitude; save(); updateWeather(); }
+      }, {once:true});
+      return;
+    }
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`;
+    const data = await (await fetch(url)).json();
+    const nowT = Math.round(data?.current?.temperature_2m ?? NaN);
+    const tMin = Math.round(data?.daily?.temperature_2m_min?.[1] ?? NaN);
+    const tMax = Math.round(data?.daily?.temperature_2m_max?.[1] ?? NaN);
+    $('wxNow').textContent = (isFinite(nowT)? `${nowT}°` : '—°');
+    $('wxNext').textContent = (isFinite(tMin)&&isFinite(tMax)? `/ утре ${tMin}…${tMax}°` : '/ утре —°');
+  }catch(e){ console.warn('weather', e); }
 }
 
 /* dashboard */
@@ -357,30 +402,32 @@ function iconId(type){
   if(type.startsWith('ГО – вноска') || type.startsWith('ГО ')) return 'i-go';
   if(type.startsWith('ГТП')) return 'i-gtp';
   if(type.startsWith('Винетка')) return 'i-vin';
-  if(type.includes('масло')) return 'i-oil';
-  if(type.includes('филтър')) return 'i-filter';
   if(type.includes('Ангренажен')) return 'i-belt';
+  if(type.includes('Накладки')) return 'i-brake';
+  if(type.includes('Поленов')) return 'i-cabin';
   return 'i-go';
 }
 function renderDashboard(){
   const L=$('todoList');
   const tasks=allTasks().slice(0,24);
-  if(!tasks.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
+  if(!tasks.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
   L.innerHTML = tasks.map(t=>{
     if(t.date){
       const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
       return `<div class="item">
-        <div>
-          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
+        <div class="ico"><svg class="icon"><use href="#${iconId(t.type)}"/></svg></div>
+        <div class="text">
+          <div class="item-title">${t.type}</div>
           <div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div>
         </div>
         <div class="badge ${cls}">${value}</div>
       </div>`;
     }else{
-      const left=t.kmLeft, cls=kmClass(left), value=(left<=0?'проср.':left+' км');
+      const left=t.kmLeft, cls=(left<=0?'bad':(left<=1000?'warn':'ok')), value=(left<=0?'проср.':left+' км');
       return `<div class="item">
-        <div>
-          <div class="item-title"><svg class="icon"><use href="#${iconId(t.type)}"/></svg>${t.type}</div>
+        <div class="ico"><svg class="icon"><use href="#${iconId(t.type)}"/></svg></div>
+        <div class="text">
+          <div class="item-title">${t.type}</div>
           <div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div>
         </div>
         <div class="badge ${cls}">${value}</div>
@@ -392,11 +439,12 @@ function renderDashboard(){
 /* vehicles & history */
 function renderVehicles(){
   const L=$('vehicleList');
-  if(!db.vehicles.length){ L.innerHTML='<div class="item" style="justify-content:center">Няма добавени МПС.</div>'; return; }
+  if(!db.vehicles.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма добавени МПС.</div>'; return; }
   L.innerHTML = db.vehicles.map(v=>`
-    <div class="item">
-      <div>
-        <div class="item-title">${v.name||'МПС'} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
+    <div class="item" style="grid-template-columns:34px 1fr auto">
+      <div class="brandmark">${brandInitials(v.make||'')}</div>
+      <div class="text">
+        <div class="item-title">${[v.make,v.model].filter(Boolean).join(' ')||'МПС'} ${v.name?('<span class="small" style="color:var(--muted)">• '+v.name+'</span>'):''} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
         <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
       </div>
       <div class="right">
@@ -407,8 +455,8 @@ function renderVehicles(){
 }
 function renderHistory(){
   const L=$('historyList');
-  if(!db.history.length){ L.innerHTML='<div class="item" style="justify-content:center">Все още няма записи.</div>'; return; }
-  L.innerHTML = db.history.map(h=>`<div class="item">
+  if(!db.history.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Все още няма записи.</div>'; return; }
+  L.innerHTML = db.history.map(h=>`<div class="item" style="grid-template-columns:1fr auto">
     <div><b>${h.type}</b> • ${h.vehicle} — ${fmt(h.date)} • ${h.odometer||0} км</div>
     <div class="item-sub">${h.notes||''} ${h.cost?('• '+h.cost+' лв.'):''}</div>
   </div>`).join('');
@@ -449,7 +497,7 @@ function renderSpark(){
   const svg  = $('spark'); if(!svg) return;
   const w    = svg.clientWidth || svg.parentElement.clientWidth;
   const h    = svg.clientHeight || 180;
-  const padL = 28, padR = 16, padT = 16, padB = 26;
+  const padL = 28, padR = 36, padT = 16, padB = 32;
   $('spYear').textContent = year;
 
   const values = monthlyBuckets(year);
@@ -464,6 +512,16 @@ function renderSpark(){
   const ns='http://www.w3.org/2000/svg';
   svg.innerHTML='';
 
+  // воден знак
+  const wm=document.createElementNS(ns,'text');
+  wm.setAttribute('x', w/2);
+  wm.setAttribute('y', padT + (h - padT - padB)/2 + 16);
+  wm.setAttribute('text-anchor','middle');
+  wm.setAttribute('class','sp-wm');
+  wm.textContent='AutoNotify BG';
+  svg.appendChild(wm);
+
+  // ос X
   const axis=document.createElementNS(ns,'line');
   axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR);
   axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB);
@@ -475,9 +533,13 @@ function renderSpark(){
     tick.setAttribute('x1',x); tick.setAttribute('x2',x);
     tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6);
     tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
+
     const lbl=document.createElementNS(ns,'text');
-    lbl.setAttribute('x',x+2); lbl.setAttribute('y',h-8);
+    let lx=x+2, anchor='start';
+    if(m===11){ lx = w - padR - 2; anchor='end'; }
+    lbl.setAttribute('x', lx); lbl.setAttribute('y', h-10);
     lbl.setAttribute('class','tl-label');
+    lbl.setAttribute('text-anchor', anchor);
     lbl.textContent = new Date(2000,m,1).toLocaleString('bg-BG',{month:'short'});
     svg.appendChild(lbl);
   }
@@ -485,7 +547,7 @@ function renderSpark(){
   const d = buildSmoothPath(pts);
   if(d){
     const area=document.createElementNS(ns,'path');
-    const areaD = d + ` L ${padL + 11*stepX} ${h-padB} L ${padL} ${h-padB} Z`;
+    const areaD = d + ` L ${pts[pts.length-1].x} ${h-padB} L ${pts[0].x} ${h-padB} Z`;
     area.setAttribute('d',areaD); area.setAttribute('class','sp-path'); svg.appendChild(area);
     const line=document.createElementNS(ns,'path');
     line.setAttribute('d',d); line.setAttribute('class','sp-line'); svg.appendChild(line);
@@ -493,16 +555,20 @@ function renderSpark(){
 }
 
 /* CRUD / ICS */
+function fillMakeModel(){
+  // попълване на марките
+  $('e_make').innerHTML = MAKE_LIST.map(m=>`<option value="${m}">${m}</option>`).join('');
+  $('e_model').innerHTML = MAKES[MAKE_LIST[0]].map(x=>`<option value="${x}">${x}</option>`).join('');
+  $('e_make').addEventListener('change', ()=>{
+    const mk=$('e_make').value;
+    const models = MAKES[mk] || ['(свободен модел)'];
+    $('e_model').innerHTML = models.map(x=>`<option value="${x}">${x}</option>`).join('');
+  });
+}
 function openVehicleEditor(){
   editId = null; $('editorTitle').textContent = 'Ново МПС';
-  [
-    'e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp',
-    'e_vignette_type','e_vignette_start','e_oil_km','e_oil_mo','e_of_km','e_ff_km',
-    'e_cabin_mo','e_air_km','e_pads_km','e_belt_km','e_belt_yr'
-  ].forEach(id=>{
-    const el = $(id); if(!el) return;
-    if(el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
-  });
+  ['e_make','e_model','e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_cabin_mo','e_pads_km','e_belt_km','e_belt_yr']
+    .forEach(id=>{ const el=$(id); if(!el) return; if(el.tagName==='SELECT'){ el.selectedIndex=0; } else { el.value=''; }});
   $('delBtn').style.display = 'none';
   $('editor').style.display = 'block';
 }
@@ -510,28 +576,29 @@ function closeVehicleEditor(){ $('editor').style.display='none'; }
 function editVehicle(id){
   const v=db.vehicles.find(x=>x.id===id); if(!v) return;
   editId=id; $('editorTitle').textContent='Редакция';
+  $('e_make').value = v.make || MAKE_LIST[0];
+  $('e_model').innerHTML = (MAKES[$('e_make').value]||['(свободен модел)']).map(x=>`<option value="${x}" ${x===v.model?'selected':''}>${x}</option>`).join('');
   $('e_name').value=v.name||''; $('e_owner').value=v.owner||'';
   $('e_odometer').value=v.odometer||'';
   $('e_go_start').value=v.goStart||''; $('e_go_plan').value=String(v.goPlan||1);
-  $('e_gtp').value=v.gtp||''; $('e_vignette_type').value=String(v.vigType||12);
+  $('e_gtp').value=v.gtp||'';
+  $('e_vignette_type').value=String(v.vigType||12);
   $('e_vignette_start').value=v.vigStart||'';
-  $('e_oil_km').value=v.oilKm||''; $('e_oil_mo').value=v.oilMo||'';
-  $('e_of_km').value=v.ofKm||''; $('e_ff_km').value=v.ffKm||'';
-  $('e_cabin_mo').value=v.cabinMo||''; $('e_air_km').value=v.airKm||'';
-  $('e_pads_km').value=v.padsKm||''; $('e_belt_km').value=v.beltKm||'';
+  $('e_cabin_mo').value=v.cabinMo||'';
+  $('e_pads_km').value=v.padsKm||'';
+  $('e_belt_km').value=v.beltKm||'';
   $('e_belt_yr').value=v.beltYr||'';
   $('delBtn').style.display='inline-flex'; $('editor').style.display='block';
 }
 function saveVehicle(){
   const v={
     id: editId || Math.random().toString(36).slice(2),
+    make:$('e_make').value, model:$('e_model').value,
     name:$('e_name').value.trim(), owner:$('e_owner').value.trim(), odometer:Number($('e_odometer').value||0),
     goStart:$('e_go_start').value||null, goPlan:Number($('e_go_plan').value||1),
     gtp:$('e_gtp').value||null, vigType:Number($('e_vignette_type').value||12), vigStart:$('e_vignette_start').value||null,
-    oilKm:Number($('e_oil_km').value||0), oilMo:Number($('e_oil_mo').value||0),
-    ofKm:Number($('e_of_km').value||0), ffKm:Number($('e_ff_km').value||0),
-    cabinMo:Number($('e_cabin_mo').value||0), airKm:Number($('e_air_km').value||0),
-    padsKm:Number($('e_pads_km').value||0), beltKm:Number($('e_belt_km').value||0), beltYr:Number($('e_belt_yr').value||0)
+    cabinMo:Number($('e_cabin_mo').value||0), padsKm:Number($('e_pads_km').value||0),
+    beltKm:Number($('e_belt_km').value||0), beltYr:Number($('e_belt_yr').value||0)
   };
   if(editId){ db.vehicles=db.vehicles.map(x=>x.id===editId?v:x);} else { db.vehicles.push(v); }
   save(); closeVehicleEditor(); renderAll();
@@ -571,11 +638,7 @@ function exportAllICS(){
 /* settings */
 function applyCfgUI(){
   $('cfg_hour').value = db.cfg.hour || '09:00';
-  $('cfg_d30').checked = !!db.cfg.d30;
-  $('cfg_d10').checked = !!db.cfg.d10;
-  $('cfg_d5').checked  = !!db.cfg.d5;
-  $('cfg_d1').checked  = !!db.cfg.d1;
-
+  $('cfg_d30').checked = !!db.cfg.d30; $('cfg_d10').checked = !!db.cfg.d10; $('cfg_d5').checked  = !!db.cfg.d5; $('cfg_d1').checked  = !!db.cfg.d1;
   const nowY = new Date().getFullYear();
   const opts = ['current', nowY-1, nowY, nowY+1, nowY+2];
   $('cfg_timeline_year').innerHTML = opts.map(v =>
@@ -618,25 +681,27 @@ $('themeBtn').addEventListener('click', ()=>{
   localStorage.setItem('theme', mode); applyTheme();
 });
 
+/* weather polling */
+setInterval(updateWeather, 30*60*1000);
+
 /* pwa install */
 let deferredPrompt=null; const installBtn=$('installBtn');
 window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-flex'; });
 if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; }); }
 
 /* render all */
-function renderAll(){
-  renderToday();
-  renderDashboard();
-  renderVehicles();
-  renderHistory();
-  renderSpark();
-}
+function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
 
 /* boot */
+function bootMakeModel(){ // попълване на марка/модел при първо зареждане
+  fillMakeModel();
+}
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error)); }
 applyTheme();
+bootMakeModel();
 load();
 renderAll();
+updateWeather();
 window.addEventListener('resize', ()=> renderSpark());
 </script>
 </body>
