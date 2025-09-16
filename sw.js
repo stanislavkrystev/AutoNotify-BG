@@ -1,5 +1,5 @@
 // sw.js
-const CACHE = 'autonotify-servicebook-mvp-v8';
+const CACHE = 'autonotify-servicebook-mvp-v14';
 const ASSETS = [
   './',
   './index.html', './manifest.json',
