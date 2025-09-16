@@ -17,8 +17,7 @@
       --shadow: 0 10px 30px rgba(32,58,92,.10);
       --accent:#5ba7ff; --accent-hover:#3f90f3;
       --ok:#28c76f; --warn:#f9a826; --bad:#ff6b6b;
-      --r:14px; --pad:12px; --gap:10px;
-      --brand:#2d4c7a;
+      --r:14px; --pad:12px; --gap:10px; --brand:#2d4c7a;
     }
     :root.dark{
       --bg:#0b1020; --text:#e8ecf1; --muted:#a8b3d1;
@@ -28,11 +27,10 @@
       --ok:#9BE7A3; --warn:#FFD166; --bad:#FF8B8B;
       --brand:#b7c8e9;
     }
-
     *{box-sizing:border-box}
-    html{ -webkit-text-size-adjust:100%; text-size-adjust:100% }
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     body{
-      margin:0; min-height:100vh; color:var(--text);
+      margin:0;min-height:100vh;color:var(--text);
       font-family:"Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       background:
         radial-gradient(1200px 600px at 10% -10%, #edf3ff 0%, transparent 60%),
@@ -40,144 +38,95 @@
         linear-gradient(180deg, #f7fbff 0%, #f3f6ff 100%);
     }
     body::before{
-      content:""; position:fixed; inset:0; z-index:-2;
+      content:"";position:fixed;inset:0;z-index:-2;
       background:url('./bg-portrait-1080x1920.webp') center/cover no-repeat;
-      filter: saturate(.7) contrast(.9);
+      filter:saturate(.7) contrast(.9);
     }
     @media (min-aspect-ratio:16/10){
       body::before{ background-image:url('./bg-landscape-1920x1080.webp'); }
     }
     body::after{
-      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+      content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
       background:
         radial-gradient(1200px 700px at 15% -10%, rgba(255,255,255,.55), transparent 60%),
         radial-gradient(1000px 600px at 90% 110%, rgba(255,255,255,.55), transparent 55%),
         linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.55));
-      mix-blend-mode: lighten;
+      mix-blend-mode:lighten;
     }
     :root.dark body::after{
       background:
-       radial-gradient(1200px 700px at 15% -10%, rgba(0,0,0,.32), transparent 60%),
-       radial-gradient(1000px 600px at 90% 110%, rgba(0,0,0,.32), transparent 55%),
-       linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.38));
-      mix-blend-mode: normal;
+        radial-gradient(1200px 700px at 15% -10%, rgba(0,0,0,.32), transparent 60%),
+        radial-gradient(1000px 600px at 90% 110%, rgba(0,0,0,.32), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.38), rgba(0,0,0,.38));
+      mix-blend-mode:normal;
     }
 
-    .app{max-width:1180px; margin:0 auto; padding:18px}
+    .app{max-width:1180px;margin:0 auto;padding:18px}
 
-    /* ---- top header ---- */
+    /* header */
     .top{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      grid-template-areas:
-        "brand  wx"
-        "nav    wx";
-      gap:10px;
-      align-items:start;
-      margin-bottom:10px;
+      display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand wx" "nav wx";
+      gap:10px;align-items:start;margin-bottom:10px;
     }
-    .brand{ grid-area: brand; font-weight:800; font-size:18px; line-height:1.1 }
-    .nav{ grid-area: nav; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start }
-    .today{ grid-area: wx; display:flex; flex-direction:column; align-items:flex-end; gap:6px }
+    .brand{grid-area:brand;font-weight:800;font-size:18px;line-height:1.1}
+    .nav{grid-area:nav;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
+    .today{grid-area:wx;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
     .wx{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px; border:1px solid var(--border); border-radius:12px;
-      background:#ffffffcc; box-shadow: var(--shadow);
-      font-size:16px; white-space:nowrap;
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border:1px solid var(--border);border-radius:12px;
+      background:#ffffffcc;box-shadow:var(--shadow);
+      font-size:16px;white-space:nowrap;
     }
-    #todayText{ white-space:nowrap; color:var(--muted); font-weight:600 }
-    @media (max-width: 520px){
-      .brand{ font-size:16px }
-      .wx{ font-size:15px }
-    }
+    #todayText{white-space:nowrap;color:var(--muted);font-weight:600}
+    @media (max-width:520px){.brand{font-size:16px}.wx{font-size:15px}}
 
     .btn{
-      padding:10px 14px; border-radius:999px;
-      background: var(--accent); border:1px solid #cfe0ff; color:white; font-weight:700;
-      box-shadow: 0 6px 18px rgba(91,167,255,.25); cursor:pointer
+      padding:10px 14px;border-radius:999px;background:var(--accent);
+      border:1px solid #cfe0ff;color:#fff;font-weight:700;
+      box-shadow:0 6px 18px rgba(91,167,255,.25);cursor:pointer
     }
-    .btn:hover{ background:var(--accent-hover) }
-    .btn.secondary{
-      background: white; color:var(--text); border:1px solid var(--border);
-      box-shadow: 0 6px 18px rgba(20,40,80,.06);
-    }
+    .btn:hover{background:var(--accent-hover)}
+    .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:0 6px 18px rgba(20,40,80,.06)}
 
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:var(--r);
-      padding:var(--pad); margin-bottom:12px; box-shadow:var(--shadow); backdrop-filter: blur(4px);
-    }
-
-    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:var(--gap)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:var(--pad);margin-bottom:12px;box-shadow:var(--shadow);backdrop-filter:blur(4px)}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
     .col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;box-shadow:0 1px 0 rgba(10,20,40,.02) inset}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#b9ccff;box-shadow:0 0 0 3px rgba(185,204,255,.35)}
 
-    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
-    input,select,textarea{
-      width:100%; padding:10px 12px; border-radius:12px;
-      border:1px solid var(--border); background:#ffffff; color:var(--text); font-size:14px;
-      box-shadow:0 1px 0 rgba(10,20,40,.02) inset;
-    }
-    input:focus,select:focus,textarea:focus{outline:none; border-color:#b9ccff; box-shadow:0 0 0 3px rgba(185,204,255,.35)}
-
-    /* стабилни плочки */
-    #todoList{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; }
-    .item{
-      display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:12px;
-      padding:12px 14px; border:1px solid var(--border); border-radius:16px; background:#ffffffc4; box-shadow: var(--shadow);
-    }
-    .ico{ width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
-    .icon{ width:20px; height:20px; display:block; margin:0; vertical-align:middle; }
-    .item-title{font-weight:700; line-height:1.2}
-    .item-sub{font-size:12px; color:var(--muted); line-height:1.2}
-    .badge{
-      min-width:98px; text-align:center; padding:8px 10px; border-radius:10px; font-weight:700;
-      background:#eef5ff; border:1px solid #d7e6ff; color:#2d4c7a;
-    }
+    #todoList{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+    .item{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:#ffffffc4;box-shadow:var(--shadow)}
+    .ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+    .icon{width:20px;height:20px;display:block;margin:0;vertical-align:middle}
+    .item-title{font-weight:700;line-height:1.2}
+    .item-sub{font-size:12px;color:var(--muted);line-height:1.2}
+    .badge{min-width:98px;text-align:center;padding:8px 10px;border-radius:10px;font-weight:700;background:#eef5ff;border:1px solid #d7e6ff;color:#2d4c7a}
     .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-    .chips{display:flex; gap:6px; flex-wrap:wrap}
-    .chip{padding:3px 10px; border-radius:999px; border:1px solid var(--border); font-size:12px; background:#fff}
-    .sep{height:1px; background:var(--border); opacity:.8; margin:8px 0}
-    .right{display:flex; gap:8px; flex-wrap:wrap}
-    .watermark{opacity:.75; font-size:12px; color:var(--muted)}
-    a.link{color:#2a5ce6; text-decoration:none} a.link:hover{text-decoration:underline}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{padding:3px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px;background:#fff}
+    .sep{height:1px;background:var(--border);opacity:.8;margin:8px 0}
+    .right{display:flex;gap:8px;flex-wrap:wrap}
+    .watermark{opacity:.75;font-size:12px;color:var(--muted)}
+    a.link{color:#2a5ce6;text-decoration:none}a.link:hover{text-decoration:underline}
 
     /* sparkline */
-    .spark{ width:100%; height:180px; overflow:visible; }
-    .sp-axis{ stroke:#dfe6ff; stroke-width:1; }
-    .sp-path{ fill:rgba(91,167,255,.15); stroke:#5ba7ff; stroke-width:2; }
-    .sp-line{ fill:none; stroke:#5ba7ff; stroke-width:2; }
-    .tl-label{ font-size:11px; fill:var(--muted); }
-    .sp-wm{ fill:var(--muted); opacity:.08; font-weight:800; font-size:56px; pointer-events:none; }
+    .spark{width:100%;height:180px;overflow:visible}
+    .sp-axis{stroke:#dfe6ff;stroke-width:1}
+    .sp-path{fill:rgba(91,167,255,.15);stroke:#5ba7ff;stroke-width:2}
+    .sp-line{fill:none;stroke:#5ba7ff;stroke-width:2}
+    .tl-label{font-size:11px;fill:var(--muted)}
+    .sp-wm{fill:var(--muted);opacity:.08;font-weight:800;font-size:56px;pointer-events:none}
 
     /* емблеми */
-    .brandmark{
-      width:34px; height:34px; border-radius:50%;
-      background:linear-gradient(135deg, #e7f1ff, #ffffff);
-      border:1px solid var(--border);
-      color:var(--brand); display:flex; align-items:center; justify-content:center; font-weight:800;
-      box-shadow: var(--shadow);
-      position:relative;
-      overflow:hidden;
-    }
-    .brandlogo{
-      width:34px; height:34px; object-fit:contain;
-      border-radius:50%;
-      background:linear-gradient(135deg,#eef4ff,#ffffff);
-      border:1px solid var(--border); box-shadow:var(--shadow);
-    }
-    .brandlogo.big{ width:72px; height:72px; position:absolute; right:14px; top:14px; opacity:.9 }
+    .logo-wrap{position:relative;overflow:hidden} /* важно – спира наслагването */
+    .brandlogo{width:34px;height:34px;object-fit:contain;border-radius:50%;background:linear-gradient(135deg,#eef4ff,#fff);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .brandlogo.big{width:72px;height:72px;position:absolute;right:14px;top:14px;opacity:.9}
 
-    .brandmark-big{
-      position:absolute; right:14px; top:14px;
-      width:72px; height:72px; border-radius:50%;
-      background:linear-gradient(135deg,#eef4ff,#ffffff);
-      border:1px solid var(--border);
-      color:var(--brand); display:flex; align-items:center; justify-content:center;
-      font-weight:800; font-size:22px; letter-spacing:.5px;
-      opacity:.35; pointer-events:none; user-select:none;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card.logo-wrap{ position:relative; overflow:hidden; }
+    /* табове за избор на МПС */
+    .veh-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+    .veh-tab{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:600}
+    .veh-tab.active{background:var(--accent);color:#fff;border-color:#cfe0ff}
   </style>
 </head>
 <body>
@@ -193,11 +142,9 @@
 </svg>
 
 <div class="app">
-
-  <!-- ЕДИНСТВЕН HEADER -->
+  <!-- HEADER -->
   <div class="top">
     <div class="brand">🚗 SK-carsinfo-BG — Сервизна книжка</div>
-
     <div class="nav">
       <button class="btn" data-tab="dashboard">Табло</button>
       <button class="btn" data-tab="vehicles">МПС</button>
@@ -206,7 +153,6 @@
       <button class="btn secondary" id="themeBtn">Тъмно</button>
       <button class="btn secondary" id="installBtn" style="display:none">Инсталирай</button>
     </div>
-
     <div class="today">
       <div class="wx" id="wxBox">
         <span id="wxNow">—°</span>
@@ -220,6 +166,7 @@
   <!-- ТАБЛО -->
   <section id="tab-dashboard" class="card">
     <h3>Следващи задачи</h3>
+    <div id="vehTabs" class="veh-tabs"></div>
     <div id="todoList"></div>
     <div class="sep"></div>
     <div class="chips small">
@@ -339,12 +286,44 @@
 </div>
 
 <script>
-/* ===== model & storage ===== */
+/* ===== модел & storage ===== */
 const KEY='sk_carsinfo_servicebook_v2';
-let db = { cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'},
-           vehicles:[], history:[], wx:{city:'', lat:null, lon:null} };
+let db = {
+  cfg:{hour:'09:00', d30:true, d10:true, d5:true, d1:true, timelineYear:'current'},
+  ui:{selectedVehId:'all'},
+  vehicles:[], history:[], wx:{city:'', lat:null, lon:null}
+};
 let editId=null;
 const $ = (id) => document.getElementById(id);
+
+/* марки/модели от data/makes.json + логика за лога */
+let MAKES = {}; let MAKE_LIST = [];
+function slug(str){ return (str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+function brandInitials(make){ return (make||'').split(/[ -]/).map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
+function logoImgHTML(make, cls=''){
+  const s = slug(make), svg = `logos/${s}.svg`, png = `logos/${s}.png`;
+  return `<img class="brandlogo ${cls}" src="${svg}" alt="${make}"
+    onerror="this.onerror=null;this.src='${png}';this.onerror=function(){this.remove();}">`;
+}
+async function loadMakes(){
+  try{
+    const res = await fetch('data/makes.json');
+    MAKES = await res.json(); MAKE_LIST = Object.keys(MAKES);
+  }catch{
+    MAKES = {"Друго":["(свободен модел)"]}; MAKE_LIST = Object.keys(MAKES);
+  }
+}
+
+/* storage */
+function load(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(KEY)) || {};
+    db = {...db, ...saved};
+    db.ui = db.ui || {selectedVehId:'all'};
+  }catch{}
+  applyCfgUI();
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
 /* helpers */
 const addMonths=(d,m)=>{ const x=new Date(d); x.setMonth(x.getMonth()+m); return x; };
@@ -352,42 +331,12 @@ const addYears=(d,y)=>{ const x=new Date(d); x.setFullYear(x.getFullYear()+y); r
 const fmt=(d)=> d? new Date(d).toLocaleDateString('bg-BG'):'—';
 const daysLeft=(d)=> d? Math.ceil((new Date(d).setHours(0,0,0,0)-Date.now())/86400000): 9e9;
 const statusClass=(n)=> n<=0?'bad':(n<=30?'warn':'ok');
-function brandInitials(make){ return (make||'').split(/[ -]/).map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
 
-/* слъг + лого с fallback SVG→PNG→инициали */
-function slug(str){
-  return (str||'')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+/* бизнес-логика */
+function labelVeh(v){
+  const mm = [v.make, v.model].filter(Boolean).join(' ');
+  return mm ? `${mm} (${v.name||'МПС'})` : (v.name||'МПС');
 }
-function logoImgHTML(make, cls=''){
-  const s = slug(make||'');
-  const svg = `logos/${s}.svg`;
-  const png = `logos/${s}.png`;
-  return `<img class="brandlogo ${cls}" src="${svg}" alt="${make}"
-    onerror="
-      this.onerror=null;
-      this.src='${png}';
-      this.onerror=function(){ this.remove(); };
-    ">`;
-}
-
-/* каталожни данни (зареждане от data/makes.json) */
-let MAKES = {};
-let MAKE_LIST = [];
-async function loadMakes(){
-  try{
-    const res = await fetch('data/makes.json');
-    MAKES = await res.json();
-    MAKE_LIST = Object.keys(MAKES);
-  }catch(e){
-    console.warn('makes.json не е наличен — fallback', e);
-    MAKES = {"Друго":["(свободен модел)"]};
-    MAKE_LIST = Object.keys(MAKES);
-  }
-}
-
-/* business */
 function tasksForVehicle(v){
   const out=[];
   if(v.goStart){
@@ -403,46 +352,56 @@ function tasksForVehicle(v){
   if(v.beltYr) out.push({veh:labelVeh(v), type:'Ангренажен ремък (г.)', date:addYears(new Date(), Number(v.beltYr))});
   return out;
 }
-function labelVeh(v){
-  const mm = [v.make, v.model].filter(Boolean).join(' ');
-  return mm ? `${mm} (${v.name||'МПС'})` : (v.name||'МПС');
-}
-function allTasks(){
-  let arr=[]; db.vehicles.forEach(v=> arr=arr.concat(tasksForVehicle(v)));
+
+/* филтър по МПС */
+function currentVehFilter(){ const id=db.ui?.selectedVehId||'all'; return id==='all'?null:id; }
+function allTasks(vehId=null){
+  let arr=[]; const list = vehId ? db.vehicles.filter(v=>v.id===vehId) : db.vehicles;
+  list.forEach(v=> arr = arr.concat(tasksForVehicle(v)));
   arr.forEach(t=>{ if(t.date){ t.days=daysLeft(t.date); }});
   arr.sort((a,b)=>{ const ad=(a.date?a.days:9e9), bd=(b.date?b.days:9e9); if(ad!==bd) return ad-bd; return (a.kmLeft??9e9)-(b.kmLeft??9e9); });
   return arr;
 }
 
 /* today + weather */
-function renderToday(){
-  const d = new Date().toLocaleDateString('bg-BG');
-  const el = document.getElementById('todayDate');
-  if(el) el.textContent = d + ' г.';
-}
+function renderToday(){ const d=new Date().toLocaleDateString('bg-BG'); $('todayDate').textContent = d+' г.'; }
 async function updateWeather(){
   try{
     let lat=db.wx.lat, lon=db.wx.lon;
-    if(!lat || !lon){
-      await new Promise((res)=>navigator.geolocation?.getCurrentPosition(p=>{ lat=p.coords.latitude; lon=p.coords.longitude; db.wx.lat=lat; db.wx.lon=lon; save(); res(); }, ()=>res(), {timeout:2000}));
+    if(!lat||!lon){
+      await new Promise(res=>navigator.geolocation?.getCurrentPosition(p=>{lat=p.coords.latitude;lon=p.coords.longitude;db.wx.lat=lat;db.wx.lon=lon;save();res();},()=>res(),{timeout:2000}));
     }
-    if(!lat || !lon){
+    if(!lat||!lon){
       $('wxCity').style.display='inline-block';
       $('wxCity').addEventListener('change', async ()=>{
         const city=$('wxCity').value.trim(); if(!city) return;
-        const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=bg&format=json`)).json();
-        if(g.results && g.results[0]){ db.wx.city=city; db.wx.lat=g.results[0].latitude; db.wx.lon=g.results[0].longitude; save(); updateWeather(); }
-      }, {once:true});
+        const g=await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=bg&format=json`)).json();
+        if(g.results&&g.results[0]){ db.wx.city=city; db.wx.lat=g.results[0].latitude; db.wx.lon=g.results[0].longitude; save(); updateWeather(); }
+      },{once:true});
       return;
     }
     const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`;
-    const data = await (await fetch(url)).json();
-    const nowT = Math.round(data?.current?.temperature_2m ?? NaN);
-    const tMin = Math.round(data?.daily?.temperature_2m_min?.[1] ?? NaN);
-    const tMax = Math.round(data?.daily?.temperature_2m_max?.[1] ?? NaN);
+    const data=await (await fetch(url)).json();
+    const nowT=Math.round(data?.current?.temperature_2m ?? NaN);
+    const tMin=Math.round(data?.daily?.temperature_2m_min?.[1] ?? NaN);
+    const tMax=Math.round(data?.daily?.temperature_2m_max?.[1] ?? NaN);
     $('wxNow').textContent = (isFinite(nowT)? `${nowT}°` : '—°');
     $('wxNext').textContent = (isFinite(tMin)&&isFinite(tMax)? `/ утре ${tMin}…${tMax}°` : '/ утре —°');
   }catch(e){ console.warn('weather', e); }
+}
+
+/* табове за МПС */
+function renderVehTabs(){
+  const L=$('vehTabs'); if(!L) return;
+  if(db.vehicles.length<=1){ L.innerHTML=''; db.ui.selectedVehId='all'; save(); return; }
+  const selected=db.ui.selectedVehId||'all';
+  const tabs=[{id:'all',label:'Всички'}].concat(
+    db.vehicles.map(v=>({id:v.id,label: v.name || [v.make,v.model].filter(Boolean).join(' ') || 'МПС'}))
+  );
+  L.innerHTML = tabs.map(t=>`<button class="veh-tab ${t.id===selected?'active':''}" data-id="${t.id}">${t.label}</button>`).join('');
+  L.querySelectorAll('.veh-tab').forEach(b=> b.onclick=()=>{
+    db.ui.selectedVehId=b.dataset.id; save(); renderDashboard(); renderSpark();
+  });
 }
 
 /* dashboard */
@@ -456,28 +415,23 @@ function iconId(type){
   return 'i-go';
 }
 function renderDashboard(){
+  const vehId=currentVehFilter();
   const L=$('todoList');
-  const tasks=allTasks().slice(0,24);
+  const tasks=allTasks(vehId).slice(0,24);
   if(!tasks.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма предстоящи задачи. Добави МПС от раздел „МПС“.</div>'; return; }
   L.innerHTML = tasks.map(t=>{
     if(t.date){
       const cls=statusClass(t.days), value=(t.days<=0?'изтекло':t.days+' дни');
       return `<div class="item">
         <div class="ico"><svg class="icon"><use href="#${iconId(t.type)}"/></svg></div>
-        <div class="text">
-          <div class="item-title">${t.type}</div>
-          <div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div>
-        </div>
+        <div class="text"><div class="item-title">${t.type}</div><div class="item-sub">${t.veh||'МПС'} — до: ${fmt(t.date)}</div></div>
         <div class="badge ${cls}">${value}</div>
       </div>`;
     }else{
       const left=t.kmLeft, cls=(left<=0?'bad':(left<=1000?'warn':'ok')), value=(left<=0?'проср.':left+' км');
       return `<div class="item">
         <div class="ico"><svg class="icon"><use href="#${iconId(t.type)}"/></svg></div>
-        <div class="text">
-          <div class="item-title">${t.type}</div>
-          <div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div>
-        </div>
+        <div class="text"><div class="item-title">${t.type}</div><div class="item-sub">${t.veh||'МПС'} — на: ${t.kmDue} км</div></div>
         <div class="badge ${cls}">${value}</div>
       </div>`;
     }
@@ -490,27 +444,21 @@ function renderVehicles(){
   if(!db.vehicles.length){ L.innerHTML='<div class="item" style="grid-template-columns:1fr;justify-content:center">Няма добавени МПС.</div>'; return; }
   L.innerHTML = db.vehicles.map(v=>`
     <div class="item logo-wrap" style="grid-template-columns:34px 1fr auto">
-      <div class="brandmark">
+      <div class="brandmark" style="position:relative">
         ${logoImgHTML(v.make||'')}
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-          ${brandInitials(v.make||'')}
-        </div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${brandInitials(v.make||'')}</div>
       </div>
-      <div class="text">
-        <div class="item-title">${[v.make,v.model].filter(Boolean).join(' ')||'МПС'} ${v.name?('<span class="small" style="color:var(--muted)">• '+v.name+'</span>'):''} ${v.owner?('<span class="small" style="color:var(--muted)">• '+v.owner+'</span>'):''}</div>
-        <div class="item-sub">ГО ${v.goStart?('от '+fmt(v.goStart)):'—'} • ГТП ${v.gtp?fmt(v.gtp):'—'} • Винетка ${v.vigStart?('от '+fmt(v.vigStart)+'/'+v.vigType+' м.'):'—'} • км: ${v.odometer||0}</div>
+      <div>
+        <div class="item-title">${v.name || [v.make,v.model].filter(Boolean).join(' ') || 'МПС'}</div>
+        <div class="item-sub">${v.owner? (v.owner+' • '):''}${v.odometer||0} км</div>
       </div>
       <div class="right">
-        <button class="btn secondary" onclick="editVehicle('${v.id}')">Редактирай</button>
-        <button class="btn secondary" onclick="downloadICS('${v.id}')">.ics</button>
+        <button class="chip" onclick="editVehicle('${v.id}')">Редакция</button>
+        <button class="chip" onclick="downloadICS('${v.id}')">.ics</button>
       </div>
-      <div class="brandmark-big">
-        ${logoImgHTML(v.make||'', 'big')}
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-          ${brandInitials(v.make||'')}
-        </div>
-      </div>
-    </div>`).join('');
+      <div class="brandmark">${logoImgHTML(v.make||'', 'big')}</div>
+    </div>
+  `).join('');
 }
 function renderHistory(){
   const L=$('historyList');
@@ -526,18 +474,19 @@ function sparkYearValue(){
   const sel = db.cfg.timelineYear;
   return (sel==='current') ? new Date().getFullYear() : Number(sel)||new Date().getFullYear();
 }
-function datedTasks(){ return allTasks().filter(t => !!t.date); }
+function datedTasks(vehId){ return allTasks(vehId).filter(t => !!t.date); }
 function monthlyBuckets(year){
+  const vehId=currentVehFilter();
   const buckets = Array(12).fill(0);
-  datedTasks().forEach(t=>{
-    const d = new Date(t.date); d.setFullYear(year);
+  datedTasks(vehId).forEach(t=>{
+    const d=new Date(t.date); d.setFullYear(year);
     buckets[d.getMonth()]++;
   });
   return buckets;
 }
 function buildSmoothPath(points){
   if(points.length<2) return '';
-  let d = `M ${points[0].x} ${points[0].y}`;
+  let d=`M ${points[0].x} ${points[0].y}`;
   for(let i=0;i<points.length-1;i++){
     const p0=points[i], p1=points[i+1];
     const mx=(p0.x+p1.x)/2, my=(p0.y+p1.y)/2;
@@ -552,241 +501,135 @@ function buildSmoothPath(points){
   return d;
 }
 function renderSpark(){
-  const year = sparkYearValue();
-  const svg  = $('spark'); if(!svg) return;
-  const w    = svg.clientWidth || svg.parentElement.clientWidth;
-  const h    = svg.clientHeight || 180;
-  const padL = 28, padR = 36, padT = 16, padB = 32;
-  $('spYear').textContent = year;
-
-  const values = monthlyBuckets(year);
-  const maxVal = Math.max(1, ...values);
-
-  const stepX  = (w - padL - padR) / 12;
-  const pts = values.map((v,i)=>{
-    const x = padL + (i + 0.5) * stepX;
-    const y = padT + (h - padT - padB) * (1 - v/maxVal);
-    return {x,y};
-  });
-
-  const ns='http://www.w3.org/2000/svg';
-  svg.innerHTML='';
-
-  // воден знак
+  const year=sparkYearValue(), svg=$('spark'); if(!svg) return;
+  const w=svg.clientWidth||svg.parentElement.clientWidth, h=svg.clientHeight||180;
+  const padL=28,padR=36,padT=16,padB=32; $('spYear').textContent=year;
+  const values=monthlyBuckets(year), maxVal=Math.max(1, ...values);
+  const stepX=(w-padL-padR)/12;
+  const pts=values.map((v,i)=>({ x:padL+(i+.5)*stepX, y:padT+(h-padT-padB)*(1-v/maxVal) }));
+  const ns='http://www.w3.org/2000/svg'; svg.innerHTML='';
   const wm=document.createElementNS(ns,'text');
-  wm.setAttribute('x', w/2);
-  wm.setAttribute('y', padT + (h - padT - padB)/2 + 12);
-  wm.setAttribute('text-anchor','middle');
-  wm.setAttribute('class','sp-wm');
-  const fs = Math.max(22, Math.min(56, 0.12 * w));
-  wm.setAttribute('style', `font-size:${fs}px`);
-  wm.textContent='SK-carsinfo-BG';
-  svg.appendChild(wm);
-
-  // ос X + етикети
+  wm.setAttribute('x',w/2); wm.setAttribute('y',padT+(h-padT-padB)/2+12);
+  wm.setAttribute('text-anchor','middle'); wm.setAttribute('class','sp-wm');
+  const fs=Math.max(22, Math.min(56, 0.12*w)); wm.setAttribute('style',`font-size:${fs}px`);
+  wm.textContent='SK-carsinfo-BG'; svg.appendChild(wm);
   const axis=document.createElementNS(ns,'line');
-  axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR);
-  axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB);
-  axis.setAttribute('class','sp-axis'); svg.appendChild(axis);
-
+  axis.setAttribute('x1',padL); axis.setAttribute('x2',w-padR); axis.setAttribute('y1',h-padB); axis.setAttribute('y2',h-padB); axis.setAttribute('class','sp-axis'); svg.appendChild(axis);
   for(let m=0;m<12;m++){
-    const x=padL + (m + 0.5) * stepX;
-    const tick=document.createElementNS(ns,'line');
-    tick.setAttribute('x1',x); tick.setAttribute('x2',x);
-    tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6);
-    tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
-
-    const lbl=document.createElementNS(ns,'text');
-    lbl.setAttribute('x', x); lbl.setAttribute('y', h-10);
-    lbl.setAttribute('class','tl-label');
-    lbl.setAttribute('text-anchor', 'middle');
-    lbl.textContent = String(m+1).padStart(2,'0');   // 01..12
-    svg.appendChild(lbl);
+    const x=padL+(m+.5)*stepX;
+    const tick=document.createElementNS(ns,'line'); tick.setAttribute('x1',x); tick.setAttribute('x2',x); tick.setAttribute('y1',h-padB); tick.setAttribute('y2',h-padB+6); tick.setAttribute('class','sp-axis'); tick.style.opacity=.5; svg.appendChild(tick);
+    const lbl=document.createElementNS(ns,'text'); lbl.setAttribute('x',x); lbl.setAttribute('y',h-10); lbl.setAttribute('class','tl-label'); lbl.setAttribute('text-anchor','middle'); lbl.textContent=String(m+1).padStart(2,'0'); svg.appendChild(lbl);
   }
-
-  const d = buildSmoothPath(pts);
+  const d=buildSmoothPath(pts);
   if(d){
-    const area=document.createElementNS(ns,'path');
-    const areaD = d + ` L ${pts[pts.length-1].x} ${h-padB} L ${pts[0].x} ${h-padB} Z`;
-    area.setAttribute('d',areaD); area.setAttribute('class','sp-path'); svg.appendChild(area);
-    const line=document.createElementNS(ns,'path');
-    line.setAttribute('d',d); line.setAttribute('class','sp-line'); svg.appendChild(line);
+    const area=document.createElementNS(ns,'path'); area.setAttribute('d', d+` L ${pts[pts.length-1].x} ${h-padB} L ${pts[0].x} ${h-padB} Z`); area.setAttribute('class','sp-path'); svg.appendChild(area);
+    const line=document.createElementNS(ns,'path'); line.setAttribute('d',d); line.setAttribute('class','sp-line'); svg.appendChild(line);
   }
 }
 
-/* CRUD / ICS */
-async function fillMakeModel(){
-  await loadMakes();
+/* CRUD / ICS (съкратено) */
+function fillMakeModel(){
   $('e_make').innerHTML = MAKE_LIST.map(m=>`<option value="${m}">${m}</option>`).join('');
-  $('e_model').innerHTML = (MAKES[MAKE_LIST[0]]||['(свободен модел)'])
-    .map(x=>`<option value="${x}">${x}</option>`).join('');
-
-  $('e_make').addEventListener('change', ()=>{
-    const mk = $('e_make').value;
-    $('e_model').innerHTML = (MAKES[mk]||['(свободен модел)'])
-      .map(x=>`<option value="${x}">${x}</option>`).join('');
-    updateLogoPreview();
-  });
-
-  updateLogoPreview();
+  $('e_model').innerHTML = MAKES[MAKE_LIST[0]].map(x=>`<option value="${x}">${x}</option>`).join('');
+  $('e_make').addEventListener('change', ()=>{ const mk=$('e_make').value; const models=MAKES[mk]||['(свободен модел)']; $('e_model').innerHTML=models.map(x=>`<option value="${x}">${x}</option>`).join(''); updateLogoPreview(); });
 }
-function updateLogoPreview(){
-  const mk = $('e_make')?.value || 'SK';
-  const el = $('logoPreview');
-  if(!el) return;
-  el.innerHTML = logoImgHTML(mk, 'big');
-  el.appendChild(document.createTextNode(''));
-  if(!el.querySelector('img')){
-    el.textContent = brandInitials(mk);
-  }
-  el.style.display = 'block';
-}
-function openVehicleEditor(){
-  editId = null; $('editorTitle').textContent = 'Ново МПС';
+function updateLogoPreview(){ const mk=$('e_make')?.value||'SK'; $('logoPreview').textContent=brandInitials(mk); }
+function openVehicleEditor(){ editId=null; $('editorTitle').textContent='Ново МПС';
   ['e_make','e_model','e_name','e_owner','e_odometer','e_go_start','e_go_plan','e_gtp','e_vignette_type','e_vignette_start','e_cabin_mo','e_pads_km','e_belt_km','e_belt_yr']
     .forEach(id=>{ const el=$(id); if(!el) return; if(el.tagName==='SELECT'){ el.selectedIndex=0; } else { el.value=''; }});
-  $('delBtn').style.display = 'none';
-  $('editor').style.display = 'block';
-  updateLogoPreview();
+  $('delBtn').style.display='none'; $('editor').style.display='block'; updateLogoPreview();
 }
 function closeVehicleEditor(){ $('editor').style.display='none'; }
 function editVehicle(id){
   const v=db.vehicles.find(x=>x.id===id); if(!v) return;
   editId=id; $('editorTitle').textContent='Редакция';
-  $('e_make').value = v.make || MAKE_LIST[0];
-  $('e_model').innerHTML = (MAKES[$('e_make').value]||['(свободен модел)']).map(x=>`<option value="${x}" ${x===v.model?'selected':''}>${x}</option>`).join('');
-  $('e_name').value=v.name||''; $('e_owner').value=v.owner||'';
-  $('e_odometer').value=v.odometer||'';
+  $('e_make').value=v.make || MAKE_LIST[0];
+  $('e_model').innerHTML=(MAKES[$('e_make').value]||['(свободен модел)']).map(x=>`<option value="${x}" ${x===v.model?'selected':''}>${x}</option>`).join('');
+  $('e_name').value=v.name||''; $('e_owner').value=v.owner||''; $('e_odometer').value=v.odometer||'';
   $('e_go_start').value=v.goStart||''; $('e_go_plan').value=String(v.goPlan||1);
-  $('e_gtp').value=v.gtp||'';
-  $('e_vignette_type').value=String(v.vigType||12);
-  $('e_vignette_start').value=v.vigStart||'';
-  $('e_cabin_mo').value=v.cabinMo||'';
-  $('e_pads_km').value=v.padsKm||'';
-  $('e_belt_km').value=v.beltKm||'';
-  $('e_belt_yr').value=v.beltYr||'';
-  $('delBtn').style.display='inline-flex'; $('editor').style.display='block';
-  updateLogoPreview();
+  $('e_gtp').value=v.gtp||''; $('e_vignette_type').value=String(v.vigType||12); $('e_vignette_start').value=v.vigStart||'';
+  $('e_cabin_mo').value=v.cabinMo||''; $('e_pads_km').value=v.padsKm||''; $('e_belt_km').value=v.beltKm||''; $('e_belt_yr').value=v.beltYr||'';
+  $('delBtn').style.display='inline-flex'; $('editor').style.display='block'; updateLogoPreview();
 }
 function saveVehicle(){
-  const v={
-    id: editId || Math.random().toString(36).slice(2),
-    make:$('e_make').value, model:$('e_model').value,
-    name:$('e_name').value.trim(), owner:$('e_owner').value.trim(), odometer:Number($('e_odometer').value||0),
-    goStart:$('e_go_start').value||null, goPlan:Number($('e_go_plan').value||1),
+  const v={ id: editId || Math.random().toString(36).slice(2),
+    make:$('e_make').value, model:$('e_model').value, name:$('e_name').value.trim(), owner:$('e_owner').value.trim(),
+    odometer:Number($('e_odometer').value||0), goStart:$('e_go_start').value||null, goPlan:Number($('e_go_plan').value||1),
     gtp:$('e_gtp').value||null, vigType:Number($('e_vignette_type').value||12), vigStart:$('e_vignette_start').value||null,
-    cabinMo:Number($('e_cabin_mo').value||0), padsKm:Number($('e_pads_km').value||0),
-    beltKm:Number($('e_belt_km').value||0), beltYr:Number($('e_belt_yr').value||0)
+    cabinMo:Number($('e_cabin_mo').value||0), padsKm:Number($('e_pads_km').value||0), beltKm:Number($('e_belt_km').value||0), beltYr:Number($('e_belt_yr').value||0)
   };
   if(editId){ db.vehicles=db.vehicles.map(x=>x.id===editId?v:x);} else { db.vehicles.push(v); }
   save(); closeVehicleEditor(); renderAll();
 }
 function deleteVehicle(){ if(!editId) return; db.vehicles=db.vehicles.filter(x=>x.id!==editId); save(); closeVehicleEditor(); renderAll(); }
-
 function clearHistory(){ db.history=[]; save(); renderHistory(); }
 
-/* ics helpers */
+/* ics – само общ експорт тук (пер-кола можеш да оставиш стария) */
 function makeIcsForVehicle(v){
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SK-carsinfo-BG//ServiceBook//BG'];
-  const addEvent=(title,date)=>{
-    if(!date) return; const dt=new Date(date); dt.setHours(9,0,0,0);
+  const addEvent=(title,date)=>{ if(!date) return; const dt=new Date(date); dt.setHours(9,0,0,0);
     const stamp=dt.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
     const uid=Math.random().toString(36).slice(2)+'@sk-carsinfo.bg';
     lines.push('BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+stamp,'DTSTART:'+stamp,'SUMMARY:'+title+' • '+(v.name||'МПС'));
-    const c=db.cfg, a=[]; if(c.d30)a.push('-P30D'); if(c.d10)a.push('-P10D'); if(c.d5)a.push('-P5D'); if(c.d1)a.push('-P1D');
-    a.forEach(x=>lines.push('BEGIN:VALARM','TRIGGER:'+x,'ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM'));
-    lines.push('END:VEVENT');
+    const c=db.cfg,a=[]; if(c.d30)a.push('-P30D'); if(c.d10)a.push('-P10D'); if(c.d5)a.push('-P5D'); if(c.d1)a.push('-P1D');
+    a.forEach(x=>lines.push('BEGIN:VALARM','TRIGGER:'+x,'ACTION:DISPLAY','DESCRIPTION:Напомняне','END:VALARM')); lines.push('END:VEVENT');
   };
-  if(v.goStart){ addEvent('ГО изтича', addYears(v.goStart,1));
-    (Number(v.goPlan||1)===1?[0]:(Number(v.goPlan||1)===2?[0,6]:[0,3,6,9]))
-      .forEach((m,i)=> addEvent('ГО – вноска '+(i+1), addMonths(v.goStart,m)));
-  }
+  if(v.goStart){ addEvent('ГО изтича', addYears(v.goStart,1)); (Number(v.goPlan||1)===1?[0]:(Number(v.goPlan||1)===2?[0,6]:[0,3,6,9]))
+    .forEach((m,i)=> addEvent('ГО – вноска '+(i+1), addMonths(v.goStart,m))); }
   if(v.gtp) addEvent('ГТП изтича', addYears(v.gtp,1));
   if(v.vigStart&&v.vigType) addEvent('Винетка изтича', addMonths(v.vigStart, Number(v.vigType)));
   lines.push('END:VCALENDAR'); return lines.join('\r\n');
 }
 function download(name,content){ const a=document.createElement('a'); a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(content); a.download=name; a.click(); }
-function downloadICS(id){ const v=db.vehicles.find(x=>x.id===id); if(!v) return; download((v.name||'mps')+'.ics', makeIcsForVehicle(v)); }
 function exportAllICS(){
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SK-carsinfo-BG//ServiceBook//BG'];
   db.vehicles.forEach(v=>{ const p=makeIcsForVehicle(v).split('\r\n').filter(x=>!/^BEGIN:VCALENDAR|END:VCALENDAR$/.test(x)); lines.push(...p); });
   lines.push('END:VCALENDAR'); download('servicebook_all.ics', lines.join('\r\n'));
 }
 
-/* settings */
+/* настройки */
 function applyCfgUI(){
-  $('cfg_hour').value = db.cfg.hour || '09:00';
-  $('cfg_d30').checked = !!db.cfg.d30; $('cfg_d10').checked = !!db.cfg.d10; $('cfg_d5').checked  = !!db.cfg.d5; $('cfg_d1').checked  = !!db.cfg.d1;
-  const nowY = new Date().getFullYear();
-  const opts = ['current', nowY-1, nowY, nowY+1, nowY+2];
-  $('cfg_timeline_year').innerHTML = opts.map(v =>
-    `<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`
-  ).join('');
+  $('cfg_hour').value=db.cfg.hour||'09:00';
+  $('cfg_d30').checked=!!db.cfg.d30; $('cfg_d10').checked=!!db.cfg.d10; $('cfg_d5').checked=!!db.cfg.d5; $('cfg_d1').checked=!!db.cfg.d1;
+  const nowY=new Date().getFullYear(); const opts=['current',nowY-1,nowY,nowY+1,nowY+2];
+  $('cfg_timeline_year').innerHTML=opts.map(v=>`<option value="${v}" ${String(v)===String(db.cfg.timelineYear)?'selected':''}>${v==='current'?'Текуща':v}</option>`).join('');
 }
 ;['cfg_hour','cfg_d30','cfg_d10','cfg_d5','cfg_d1','cfg_timeline_year'].forEach(id=>{
-  document.addEventListener('change', (e)=> {
+  document.addEventListener('change', (e)=>{
     if(e.target && e.target.id===id){
-      db.cfg.hour = $('cfg_hour').value;
-      db.cfg.d30  = $('cfg_d30').checked;
-      db.cfg.d10  = $('cfg_d10').checked;
-      db.cfg.d5   = $('cfg_d5').checked;
-      db.cfg.d1   = $('cfg_d1').checked;
-      db.cfg.timelineYear = $('cfg_timeline_year').value;
-      save(); renderSpark();
+      db.cfg.hour=$('cfg_hour').value; db.cfg.d30=$('cfg_d30').checked; db.cfg.d10=$('cfg_d10').checked; db.cfg.d5=$('cfg_d5').checked; db.cfg.d1=$('cfg_d1').checked;
+      db.cfg.timelineYear=$('cfg_timeline_year').value; save(); renderSpark();
     }
   });
 });
 
-/* nav */
+/* навигация */
 document.querySelectorAll('.nav .btn').forEach(b=>{
   b.addEventListener('click', ()=>{
-    const tab = b.dataset.tab;
-    ['dashboard','vehicles','history','settings'].forEach(t=>{
-      const el = $('tab-'+t);
-      if(el) el.style.display = (t===tab ? 'block' : 'none');
-    });
+    const tab=b.dataset.tab;
+    ['dashboard','vehicles','history','settings'].forEach(t=>{ const el=$('tab-'+t); if(el) el.style.display=(t===tab?'block':'none'); });
   });
 });
 
-/* theme toggle */
-function applyTheme(){
-  const mode = localStorage.getItem('theme') || 'light';
-  document.documentElement.classList.toggle('dark', mode==='dark');
-  $('themeBtn').textContent = (mode==='dark' ? 'Светло' : 'Тъмно');
-}
-$('themeBtn').addEventListener('click', ()=>{
-  const mode = (localStorage.getItem('theme') || 'light') === 'light' ? 'dark' : 'light';
-  localStorage.setItem('theme', mode); applyTheme();
-});
+/* theme */
+function applyTheme(){ const mode=localStorage.getItem('theme')||'light'; document.documentElement.classList.toggle('dark', mode==='dark'); $('themeBtn').textContent=(mode==='dark'?'Светло':'Тъмно'); }
+$('themeBtn').addEventListener('click', ()=>{ const mode=(localStorage.getItem('theme')||'light')==='light'?'dark':'light'; localStorage.setItem('theme', mode); applyTheme(); });
 
-/* weather polling */
-setInterval(updateWeather, 30*60*1000);
-
-/* pwa install */
+/* install PWA */
 let deferredPrompt=null; const installBtn=$('installBtn');
 window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.display='inline-flex'; });
 if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; }); }
 
 /* render all */
-function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
+function renderAll(){ renderToday(); renderVehTabs(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
 
-/* SW v20 */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw-v20.js');
-  });
-}
+/* SW */
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js')); }
 
 /* boot */
-function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)) || db; }catch{} applyCfgUI(); }
-function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
-
 applyTheme();
-fillMakeModel();   // async, попълва марка/модел и логото в редактора
-load();
-renderAll();
-updateWeather();
-window.addEventListener('resize', () => renderSpark());
+loadMakes().then(()=>{ fillMakeModel(); load(); renderAll(); updateWeather(); });
+window.addEventListener('resize', ()=>renderSpark());
 </script>
 </body>
 </html>
