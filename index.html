@@ -693,16 +693,21 @@ if(installBtn){ installBtn.addEventListener('click', async()=>{ if(!deferredProm
 function renderAll(){ renderToday(); renderDashboard(); renderVehicles(); renderHistory(); renderSpark(); }
 
 /* boot */
-function bootMakeModel(){ // попълване на марка/модел при първо зареждане
-  fillMakeModel();
+<!-- boot -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw-v17.js'); // новият файл
+  });
 }
-if('serviceWorker' in navigator){ window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(console.error)); }
+
 applyTheme();
-bootMakeModel();
+bootMakeModel();   // попълване на марка/модел
 load();
 renderAll();
 updateWeather();
-window.addEventListener('resize', ()=> renderSpark());
+window.addEventListener('resize', () => renderSpark());
 </script>
 </body>
 </html>
+
